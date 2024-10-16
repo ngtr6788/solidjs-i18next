@@ -1,0 +1,69 @@
+{
+  "version": "4",
+  "specifiers": {
+    "jsr:@std/assert@1": "1.0.6",
+    "jsr:@std/internal@^1.0.4": "1.0.4",
+    "npm:html-parse-string@^0.0.9": "0.0.9",
+    "npm:i18next@^23.16.0": "23.16.0",
+    "npm:solid-js@^1.9.2": "1.9.2_seroval@1.1.1"
+  },
+  "jsr": {
+    "@std/assert@1.0.6": {
+      "integrity": "1904c05806a25d94fe791d6d883b685c9e2dcd60e4f9fc30f4fc5cf010c72207",
+      "dependencies": [
+        "jsr:@std/internal"
+      ]
+    },
+    "@std/internal@1.0.4": {
+      "integrity": "62e8e4911527e5e4f307741a795c0b0a9e6958d0b3790716ae71ce085f755422"
+    }
+  },
+  "npm": {
+    "@babel/runtime@7.25.7": {
+      "integrity": "sha512-FjoyLe754PMiYsFaN5C94ttGiOmBNYTf6pLr4xXHAT5uctHb092PBszndLDR5XA/jghQvn4n7JMHl7dmTgbm9w==",
+      "dependencies": [
+        "regenerator-runtime"
+      ]
+    },
+    "csstype@3.1.3": {
+      "integrity": "sha512-M1uQkMl8rQK/szD0LNhtqxIPLpimGm8sOBwU7lLnCpSbTyY3yeU1Vc7l4KT5zT4s/yOxHH5O7tIuuLOCnLADRw=="
+    },
+    "html-parse-string@0.0.9": {
+      "integrity": "sha512-wyGnsOolHbNrcb8N6bdJF4EHyzd3zVGCb9/mBxeNjAYBDOZqD7YkqLBz7kXtdgHwNnV8lN/BpSDpsI1zm8Sd8g=="
+    },
+    "i18next@23.16.0": {
+      "integrity": "sha512-Ni3CG6c14teOogY19YNRl+kYaE/Rb59khy0VyHVn4uOZ97E2E/Yziyi6r3C3s9+wacjdLZiq/LLYyx+Cgd+FCw==",
+      "dependencies": [
+        "@babel/runtime"
+      ]
+    },
+    "regenerator-runtime@0.14.1": {
+      "integrity": "sha512-dYnhHh0nJoMfnkZs6GmmhFknAGRrLznOu5nc9ML+EJxGvrx6H7teuevqVqCuPcPK//3eDrrjQhehXVx9cnkGdw=="
+    },
+    "seroval-plugins@1.1.1_seroval@1.1.1": {
+      "integrity": "sha512-qNSy1+nUj7hsCOon7AO4wdAIo9P0jrzAMp18XhiOzA6/uO5TKtP7ScozVJ8T293oRIvi5wyCHSM4TrJo/c/GJA==",
+      "dependencies": [
+        "seroval"
+      ]
+    },
+    "seroval@1.1.1": {
+      "integrity": "sha512-rqEO6FZk8mv7Hyv4UCj3FD3b6Waqft605TLfsCe/BiaylRpyyMC0b+uA5TJKawX3KzMrdi3wsLbCaLplrQmBvQ=="
+    },
+    "solid-js@1.9.2_seroval@1.1.1": {
+      "integrity": "sha512-fe/K03nV+kMFJYhAOE8AIQHcGxB4rMIEoEyrulbtmf217NffbbwBqJnJI4ovt16e+kaIt0czE2WA7mP/pYN9yg==",
+      "dependencies": [
+        "csstype",
+        "seroval",
+        "seroval-plugins"
+      ]
+    }
+  },
+  "workspace": {
+    "dependencies": [
+      "jsr:@std/assert@1",
+      "npm:html-parse-string@^0.0.9",
+      "npm:i18next@^23.16.0",
+      "npm:solid-js@^1.9.2"
+    ]
+  }
+}
