@@ -1,4 +1,9 @@
-import { createContext, createMemo, type Context, type ParentComponent } from "solid-js";
+import {
+  type Context,
+  createContext,
+  createMemo,
+  type ParentComponent,
+} from "solid-js";
 import type { i18n, Namespace } from "i18next";
 
 interface I18nContextObject {
@@ -6,7 +11,8 @@ interface I18nContextObject {
   ns: Namespace;
 }
 
-export const I18nContext: Context<I18nContextObject | undefined> = createContext();
+export const I18nContext: Context<I18nContextObject | undefined> =
+  createContext();
 
 export const I18NextProvider: ParentComponent<I18nContextObject> = (props) => {
   const value = createMemo(() => ({ i18n: props.i18n, ns: props.ns }));
@@ -16,4 +22,4 @@ export const I18NextProvider: ParentComponent<I18nContextObject> = (props) => {
       {props.children}
     </I18nContext.Provider>
   );
-}
+};

@@ -1,4 +1,9 @@
-import i18next, { type Callback, type i18n, type Namespace, type TFunction } from "i18next";
+import i18next, {
+  type Callback,
+  type i18n,
+  type Namespace,
+  type TFunction,
+} from "i18next";
 import {
   createEffect,
   createResource,
@@ -43,7 +48,11 @@ function loadLanguages(
   i18n.loadLanguages(lng, callback);
 }
 
-function loadNamespaces(i18n: i18n, namespaces: string | readonly string[], callback: Callback) {
+function loadNamespaces(
+  i18n: i18n,
+  namespaces: string | readonly string[],
+  callback: Callback,
+) {
   i18n.loadNamespaces(namespaces, callback);
 }
 
@@ -52,10 +61,12 @@ interface TranslationOptions {
   lng: string;
   ns: Namespace<string>;
   useSuspense: boolean;
-  i18n: i18n
+  i18n: i18n;
 }
 
-export function createTranslation(options: Partial<TranslationOptions> = {}): [TFunction, i18n]{
+export function createTranslation(
+  options: Partial<TranslationOptions> = {},
+): [TFunction, i18n] {
   const i18nContext = useContext(I18nContext);
 
   const i18n = options.i18n || i18nContext?.i18n || i18next;
@@ -159,8 +170,7 @@ export function createTranslation(options: Partial<TranslationOptions> = {}): [T
     });
   });
 
-  const t = (...args: Parameters<TFunction>) =>
-    translate()(...args);
+  const t = (...args: Parameters<TFunction>) => translate()(...args);
 
   return [t, i18n];
 }

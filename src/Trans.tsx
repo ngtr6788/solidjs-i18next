@@ -1,6 +1,12 @@
 import i18next, { type i18n, type TFunction } from "i18next";
-import { children, Show, useContext, type Component, type JSXElement } from "solid-js";
-import { parse, type IDom } from "html-parse-string";
+import {
+  children,
+  type Component,
+  type JSXElement,
+  Show,
+  useContext,
+} from "solid-js";
+import { type IDom, parse } from "html-parse-string";
 import { I18nContext } from "./I18NextProvider.tsx";
 
 interface TransProps {
@@ -11,7 +17,10 @@ interface TransProps {
   ns?: string | string[];
   defaultValue?: string;
   components?: readonly JSXElement[] | Record<string, JSXElement>;
-  children?: JSXElement | Record<string, unknown> | (JSXElement | Record<string, unknown>)[]
+  children?:
+    | JSXElement
+    | Record<string, unknown>
+    | (JSXElement | Record<string, unknown>)[];
   t?: TFunction;
   i18n?: i18n;
 }
@@ -38,7 +47,9 @@ const Trans: Component<TransProps> = (props) => {
   const keepArray = ["br", "strong", "i", "p"];
   const keepRegex = new RegExp(keepArray.map((keep) => `<${keep}`).join("|"));
 
-  const nodesToString = (nodes: (JSXElement | { [key: string]: unknown })[]): string => {
+  const nodesToString = (
+    nodes: (JSXElement | { [key: string]: unknown })[],
+  ): string => {
     let stringNode = "";
 
     nodes.forEach((node, i) => {
@@ -143,7 +154,10 @@ const Trans: Component<TransProps> = (props) => {
     return { ...data, ...tOpts() };
   };
 
-  const buildContent = (jsxNodes: readonly JSXElement[] | Record<string, JSXElement>, astNodes: IDom[]) => {
+  const buildContent = (
+    jsxNodes: readonly JSXElement[] | Record<string, JSXElement>,
+    astNodes: IDom[],
+  ) => {
     return astNodes.reduce((mem, node) => {
       if (node.type === "text") {
         const content = i18n().services.interpolator.interpolate(
@@ -154,7 +168,8 @@ const Trans: Component<TransProps> = (props) => {
         );
         mem.push(content);
       } else if (node.type === "tag") {
-        const child: JSXElement = jsxNodes[parseInt(node.name, 10)] ?? jsxNodes[node.name];
+        const child: JSXElement = jsxNodes[parseInt(node.name, 10)] ??
+          jsxNodes[node.name];
 
         if (typeof child === "string") {
           const value = i18n().services.interpolator.interpolate(
@@ -223,6 +238,6 @@ const Trans: Component<TransProps> = (props) => {
       </Show>
     </Show>
   );
-}
+};
 
 export default Trans;
