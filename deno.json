@@ -9,7 +9,7 @@
     "solid-js": "npm:solid-js@^1.9.2"
   },
   "compilerOptions": {
-    "jsx": "preserve",
+    "jsx": "precompile",
     "jsxImportSource": "solid-js",
     "lib": ["dom", "dom.iterable", "dom.asynciterable", "deno.ns"]
   }
