@@ -1,0 +1,22 @@
+{
+  "name": "solidly-eighteen",
+  "version": "0.0.0",
+  "description": "",
+  "scripts": {
+    "storybook": "storybook dev -p 6006"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@storybook/html": "^8.3.6",
+    "@storybook/html-vite": "^8.3.6",
+    "storybook": "^8.3.6",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.11",
+    "vite-plugin-solid": "^2.8.2"
+  },
+  "dependencies": {
+    "html-parse-string": "^0.0.9",
+    "i18next": "^23.16.0",
+    "solid-js": "^1.9.2"
+  }
+}
