@@ -32,12 +32,12 @@ const Trans: Component<TransProps> = (props) => {
 
   const i18nContext = useContext(I18nContext);
 
-  const i18n = () => props.i18n || i18nContext?.i18n || i18next;
+  const i18n = props.i18n || i18nContext?.i18n || i18next;
 
-  const t = () => props.t || i18n().t.bind(i18n());
+  const t = () => props.t || i18n.t.bind(i18n);
 
   const namespaces = () => {
-    const namespaces = props.ns || i18nContext?.ns || i18n().options?.defaultNS;
+    const namespaces = props.ns || i18nContext?.ns || i18n.options?.defaultNS;
     const namespacesArray = typeof namespaces === "string"
       ? [namespaces]
       : namespaces || ["translation"];
@@ -106,7 +106,7 @@ const Trans: Component<TransProps> = (props) => {
   const key = () => props.i18nKey || nodesAsString() || defaultValue();
 
   const values = () => {
-    const defaultVariables = i18n().options?.interpolation?.defaultVariables;
+    const defaultVariables = i18n.options?.interpolation?.defaultVariables;
     if (defaultVariables) {
       return props.values && Object.keys(props.values).length > 0
         ? { ...props.values, ...defaultVariables }
@@ -160,10 +160,10 @@ const Trans: Component<TransProps> = (props) => {
   ) => {
     return astNodes.reduce((mem, node) => {
       if (node.type === "text") {
-        const content = i18n().services.interpolator.interpolate(
+        const content = i18n.services.interpolator.interpolate(
           node.content || "",
           opts(),
-          i18n().language,
+          i18n.language,
           {},
         );
         mem.push(content);
@@ -172,19 +172,19 @@ const Trans: Component<TransProps> = (props) => {
           jsxNodes[node.name];
 
         if (typeof child === "string") {
-          const value = i18n().services.interpolator.interpolate(
+          const value = i18n.services.interpolator.interpolate(
             child,
             opts(),
-            i18n().language,
+            i18n.language,
             {},
           );
           mem.push(value);
         } else if (child instanceof Element) {
           if (child.nodeType === Node.TEXT_NODE) {
-            const value = i18n().services.interpolator.interpolate(
+            const value = i18n.services.interpolator.interpolate(
               child.textContent ?? "",
               opts(),
-              i18n().language,
+              i18n.language,
               {},
             );
             mem.push(value);
