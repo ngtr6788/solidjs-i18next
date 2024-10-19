@@ -25,7 +25,7 @@ interface TransProps {
   i18n?: i18n;
 }
 
-const Trans: Component<TransProps> = (props) => {
+export const Trans: Component<TransProps> = (props) => {
   const c = children(() => props.children);
 
   const childrenArray = () => c.toArray();
@@ -239,5 +239,3 @@ const Trans: Component<TransProps> = (props) => {
     </Show>
   );
 };
-
-export default Trans;
