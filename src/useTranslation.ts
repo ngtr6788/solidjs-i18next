@@ -169,7 +169,8 @@ export function useTranslation(
     });
   });
 
-  const t = (...args: Parameters<TFunction>) => translate()(...args);
+  // @ts-ignore Property '$TFunctionBrand' is missing in type... TODO: Deal with this
+  const t: TFunction = (...args) => translate()(...args);
 
   return [t, i18n];
 }
