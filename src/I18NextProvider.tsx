@@ -8,7 +8,7 @@ import type { i18n, Namespace } from "i18next";
 
 interface I18nContextObject {
   i18n: i18n;
-  ns: Namespace;
+  ns?: Namespace;
 }
 
 export const I18nContext: Context<I18nContextObject | undefined> =

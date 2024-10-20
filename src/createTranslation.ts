@@ -56,7 +56,7 @@ function loadNamespaces(
   i18n.loadNamespaces(namespaces, callback);
 }
 
-interface TranslationOptions {
+export interface TranslationOptions {
   keyPrefix: string;
   lng: string;
   ns: Namespace<string>;
@@ -113,7 +113,6 @@ export function createTranslation(
     }
   };
 
-  // const [translate, setTranslate] = createSignal(getT());
   const [translate, { mutate: setTranslate, refetch }] = createResource(
     loadLngNsT,
     { initialValue: getT() },
