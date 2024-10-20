@@ -1,14 +1,15 @@
-import type { Component, JSXElement } from "solid-js";
-import { useTranslation, TranslationOptions } from "./useTranslation.ts";
+import { splitProps, type Component, type JSXElement } from "solid-js";
+import { useTranslation, UseTranslationOptions } from "./useTranslation.ts";
 import type { i18n, TFunction } from "i18next";
 
-interface TranslationProps {
+interface TranslationProps extends UseTranslationOptions {
   children: (t: TFunction, i18n: i18n) => JSXElement;
-  options?: TranslationOptions;
 }
 
 export const Translation: Component<TranslationProps> = (props) => {
-  const [t, i18n] = useTranslation(props.options);
+  const [ch, options] = splitProps(props, ["children"]);
 
-  return props.children(t, i18n);
+  const [t, i18n] = useTranslation(options);
+
+  return ch.children(t, i18n);
 };

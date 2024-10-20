@@ -56,16 +56,16 @@ function loadNamespaces(
   i18n.loadNamespaces(namespaces, callback);
 }
 
-export interface TranslationOptions {
-  keyPrefix: string;
-  lng: string;
-  ns: Namespace<string>;
-  useSuspense: boolean;
-  i18n: i18n;
+export interface UseTranslationOptions {
+  keyPrefix?: string;
+  lng?: string;
+  ns?: Namespace<string>;
+  useSuspense?: boolean;
+  i18n?: i18n;
 }
 
 export function useTranslation(
-  options: Partial<TranslationOptions> = {},
+  options: UseTranslationOptions = {},
 ): [TFunction, i18n] {
   const i18nContext = useContext(I18nContext);
 
