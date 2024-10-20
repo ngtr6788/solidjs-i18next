@@ -68,7 +68,7 @@ export const ChangeLanguage: StoryObj = {
   }
 }
 
-export const CreateTranslationLngProp: StoryObj = {
+export const UseTranslationLngProp: StoryObj = {
   render: () => {
     const [lng, setLng] = createSignal("en");
 
@@ -91,7 +91,7 @@ export const CreateTranslationLngProp: StoryObj = {
   }
 }
 
-export const ChangeTranslationKeyPrefixProp: StoryObj = {
+export const UseTranslationKeyPrefixProp: StoryObj = {
   render: () => {
     const [keyPrefix, setKeyPrefix] = createSignal("");
 
@@ -114,7 +114,7 @@ export const ChangeTranslationKeyPrefixProp: StoryObj = {
   }
 }
 
-export const CreateTranslationNamespaceProp: StoryObj = {
+export const UseTranslationNamespaceProp: StoryObj = {
   render: () => {
     const [ns, setNs] = createSignal("translation");
 
