@@ -1,5 +1,5 @@
 import i18next from "i18next";
-import { createTranslation, I18NextProvider } from "../src";
+import { useTranslation, I18NextProvider } from "../src";
 import { createSignal } from "solid-js";
 import { StoryObj, Meta } from "@storybook/html";
 
@@ -51,7 +51,7 @@ export default meta;
 
 export const ChangeLanguage: StoryObj = {
   render: () => {
-    const [t, i18n] = createTranslation();
+    const [t, i18n] = useTranslation();
 
     let lng = "en";
     const handleClick = () => {
@@ -72,7 +72,7 @@ export const CreateTranslationLngProp: StoryObj = {
   render: () => {
     const [lng, setLng] = createSignal("en");
 
-    const [t] = createTranslation({
+    const [t] = useTranslation({
       get lng() {
         return lng()
       }
@@ -95,7 +95,7 @@ export const ChangeTranslationKeyPrefixProp: StoryObj = {
   render: () => {
     const [keyPrefix, setKeyPrefix] = createSignal("");
 
-    const [t] = createTranslation({
+    const [t] = useTranslation({
       get keyPrefix() {
         return keyPrefix();
       }
@@ -118,7 +118,7 @@ export const CreateTranslationNamespaceProp: StoryObj = {
   render: () => {
     const [ns, setNs] = createSignal("translation");
 
-    const [t] = createTranslation({
+    const [t] = useTranslation({
       get ns() {
         return ns();
       }

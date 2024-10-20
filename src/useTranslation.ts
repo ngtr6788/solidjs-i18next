@@ -64,7 +64,7 @@ export interface TranslationOptions {
   i18n: i18n;
 }
 
-export function createTranslation(
+export function useTranslation(
   options: Partial<TranslationOptions> = {},
 ): [TFunction, i18n] {
   const i18nContext = useContext(I18nContext);
