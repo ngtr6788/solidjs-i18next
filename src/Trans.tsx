@@ -9,6 +9,8 @@ import {
 import { type IDom, parse } from "html-parse-string";
 import { I18nContext } from "./I18NextProvider.tsx";
 
+type TransChild = JSXElement | Record<string, unknown>;
+
 interface TransProps {
   i18nKey: string;
   count?: number;
@@ -17,15 +19,13 @@ interface TransProps {
   ns?: string | string[];
   defaultValue?: string;
   components?: readonly JSXElement[] | Record<string, JSXElement>;
-  children?:
-    | JSXElement
-    | Record<string, unknown>
-    | (JSXElement | Record<string, unknown>)[];
+  children?: TransChild | readonly TransChild[];
   t?: TFunction;
   i18n?: i18n;
 }
 
 export const Trans: Component<TransProps> = (props) => {
+  // @ts-ignore Type 'TransChild | readonly TransChild[]' is not assignable to type 'Element'.
   const c = children(() => props.children);
 
   const childrenArray = () => c.toArray();
@@ -38,18 +38,17 @@ export const Trans: Component<TransProps> = (props) => {
 
   const namespaces = () => {
     const namespaces = props.ns || i18nContext?.ns || i18n.options?.defaultNS;
-    const namespacesArray = typeof namespaces === "string"
-      ? [namespaces]
-      : namespaces || ["translation"];
+    const namespacesArray =
+      typeof namespaces === "string"
+        ? [namespaces]
+        : namespaces || ["translation"];
     return namespacesArray;
   };
 
   const keepArray = ["br", "strong", "i", "p"];
   const keepRegex = new RegExp(keepArray.map((keep) => `<${keep}`).join("|"));
 
-  const nodesToString = (
-    nodes: (JSXElement | { [key: string]: unknown })[],
-  ): string => {
+  const nodesToString = (nodes: TransChild[]): string => {
     let stringNode = "";
 
     nodes.forEach((node, i) => {
@@ -72,12 +71,11 @@ export const Trans: Component<TransProps> = (props) => {
             }
           } else {
             if (
-              shouldKeepChild && nodeChildren.length === 1 &&
+              shouldKeepChild &&
+              nodeChildren.length === 1 &&
               nodeChildren[0].nodeType === Node.TEXT_NODE
             ) {
-              stringNode += `<${nodeName}>${
-                nodeChildren[0].textContent
-              }</${nodeName}>`;
+              stringNode += `<${nodeName}>${nodeChildren[0].textContent}</${nodeName}>`;
             } else {
               const content = nodesToString([...nodeChildren]);
               stringNode += `<${i}>${content}</${i}>`;
@@ -85,7 +83,10 @@ export const Trans: Component<TransProps> = (props) => {
           }
         }
       } else if (typeof node === "object") {
-        const { format, ...clone } = node;
+        const { format, ...clone } = node as {
+          format?: string;
+          [key: string]: unknown;
+        };
         const keys = Object.keys(clone);
 
         if (keys.length === 1) {
@@ -141,7 +142,7 @@ export const Trans: Component<TransProps> = (props) => {
   const opts = () => {
     const data = {};
 
-    const comps = components();
+    const comps = components() as { [key: string | number]: JSXElement };
     if (comps) {
       Object.keys(comps).forEach((key) => {
         const child = comps[key];
@@ -164,12 +165,15 @@ export const Trans: Component<TransProps> = (props) => {
           node.content || "",
           opts(),
           i18n.language,
-          {},
+          {}
         );
         mem.push(content);
       } else if (node.type === "tag") {
-        const child: JSXElement = jsxNodes[parseInt(node.name, 10)] ??
-          jsxNodes[node.name];
+        const nodes = jsxNodes as {
+          [key: string | number]: JSXElement;
+        };
+        const child = nodes[parseInt(node.name, 10)] ??
+          nodes[node.name];
 
         if (typeof child === "string") {
           const value = i18n.services.interpolator.interpolate(
@@ -213,9 +217,9 @@ export const Trans: Component<TransProps> = (props) => {
           } else if (node.voidElement) {
             mem.push(`<${node.name}></${node.name}>`);
           } else {
-            const inner = buildContent([], node.children).map((x) =>
-              typeof x === "string" ? x : x.outerHTML
-            ).join();
+            const inner = buildContent([], node.children)
+              .map((x) => (typeof x === "string" ? x : x.outerHTML))
+              .join();
             mem.push(`<${node.name}>${inner}</${node.name}>`);
           }
         }
