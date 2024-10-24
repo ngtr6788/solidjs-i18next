@@ -55,7 +55,7 @@ export const UseTProp: StoryObj = {
       {(t) => <p>{t("special.button")}</p>}
     </Translation>
   ) as Element
-}
+};
 
 export const ChangeLanguage: StoryObj = {
   render: () => {
@@ -66,19 +66,19 @@ export const ChangeLanguage: StoryObj = {
           const handleClick = () => {
             lng = lng === "en" ? "fr" : "en";
             i18n.changeLanguage(lng);
-          }
+          };
 
           return (
             <>
               <button on:click={handleClick}>Change language</button>
               <p>{t("button")}</p>
             </>
-          )
+          );
         }}
       </Translation>
     ) as Element;
   }
-}
+};
 
 export const TranslationLngProp: StoryObj = {
   render: () => {
@@ -86,7 +86,7 @@ export const TranslationLngProp: StoryObj = {
 
     const handleClick = () => {
       setLng(lng() === "en" ? "fr" : "en");
-    }
+    };
 
     return (
       <>
@@ -96,16 +96,16 @@ export const TranslationLngProp: StoryObj = {
         </Translation>
       </>
     ) as Element;
-  }
-}
+  },
+};
 
 export const TranslationKeyPrefixProp: StoryObj = {
   render: () => {
     const [keyPrefix, setKeyPrefix] = createSignal("");
-    
+
     const handleClick = () => {
       setKeyPrefix(keyPrefix() === "" ? "special" : "");
-    }
+    };
 
     return (
       <>
@@ -116,15 +116,15 @@ export const TranslationKeyPrefixProp: StoryObj = {
       </>
     ) as Element;
   }
-}
+};
 
 export const TranslationNamespaceProp: StoryObj = {
   render: () => {
     const [ns, setNs] = createSignal("translation");
 
     const handleClick = () => {
-      setNs(ns() === "translation" ? "informal" : "translation")
-    }
+      setNs(ns() === "translation" ? "informal" : "translation");
+    };
 
     return (
       <>
@@ -135,4 +135,4 @@ export const TranslationNamespaceProp: StoryObj = {
       </>
     ) as Element;
   }
-}
+};
