@@ -15,6 +15,7 @@
     "vite-plugin-solid": "^2.8.2"
   },
   "dependencies": {
+    "@solid-primitives/trigger": "^1.1.0",
     "html-parse-string": "^0.0.9",
     "i18next": "^23.16.0",
     "solid-js": "^1.9.2"
