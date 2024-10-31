@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import i18next, {
   Callback,
   CloneOptions,
@@ -11,8 +12,8 @@ import i18next, {
   type i18n,
 } from "i18next";
 import { createTrigger } from "@solid-primitives/trigger";
-import { Accessor, createEffect, createSignal, useContext } from "solid-js";
-import { createStore, produce, reconcile } from "solid-js/store";
+import { createEffect, useContext } from "solid-js";
+import { createStore, produce } from "solid-js/store";
 import { I18nContext } from "./I18NextProvider";
 
 class ReactiveI18n implements i18n {
@@ -55,7 +56,7 @@ class ReactiveI18n implements i18n {
     });
   }
 
-  // @ts-ignore
+  // @ts-expect-error TSFunctionBrand issue
   t(...args: Parameters<i18n["t"]>) {
     this.#i18nTrack();
     return this.#i18n.t(...args);

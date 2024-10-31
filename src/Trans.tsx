@@ -25,7 +25,7 @@ interface TransProps {
 }
 
 export const Trans: Component<TransProps> = (props) => {
-  // @ts-ignore Type 'TransChild | readonly TransChild[]' is not assignable to type 'Element'.
+  // @ts-expect-error Type 'TransChild | readonly TransChild[]' is not assignable to type 'Element'.
   const c = children(() => props.children);
 
   const childrenArray = () => c.toArray();
