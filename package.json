@@ -3,7 +3,11 @@
   "version": "0.0.0",
   "description": "",
   "scripts": {
-    "storybook": "storybook dev -p 6006"
+    "storybook": "storybook dev -p 6006",
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix .",
+    "format": "prettier . --check",
+    "format:fix": "prettier . --write"
   },
   "license": "MIT",
   "devDependencies": {
