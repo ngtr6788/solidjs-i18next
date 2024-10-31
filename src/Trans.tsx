@@ -5,6 +5,7 @@ import {
   type JSXElement,
   Show,
   useContext,
+  createEffect,
 } from "solid-js";
 import { type IDom, parse } from "html-parse-string";
 import { I18nContext } from "./I18NextProvider.tsx";
@@ -197,11 +198,13 @@ export const Trans: Component<TransProps> = (props) => {
               [...child.childNodes],
               node.children,
             );
-            if (child.hasChildNodes() && childChildren.length === 0) {
-              mem.push(child);
+            if (childChildren.length === 0 && child.hasChildNodes()) {
+              const childDeepClone = child.cloneNode(true) as Element;
+              mem.push(childDeepClone);
             } else {
-              child.replaceChildren(...childChildren);
-              mem.push(child);
+              const childShallowClone = child.cloneNode(false) as Element;
+              childShallowClone.replaceChildren(...childChildren);
+              mem.push(childShallowClone);
             }
           }
         } else if (Number.isNaN(parseFloat(node.name))) {
