@@ -2,6 +2,7 @@ import globals from "globals";
 import pluginJs from "@eslint/js";
 import solid from "eslint-plugin-solid/configs/typescript";
 import tseslint from "typescript-eslint";
+import eslintConfigPrettier from "eslint-config-prettier";
 
 
 /** @type {import('eslint').Linter.Config[]} */
@@ -19,5 +20,6 @@ export default [
   {
     files: ["**/*.{ts,tsx}"],
     ...solid
-  }
+  },
+  eslintConfigPrettier
 ];

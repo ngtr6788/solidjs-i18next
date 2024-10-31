@@ -33,12 +33,18 @@ importers:
       eslint:
         specifier: ^9.13.0
         version: 9.13.0
+      eslint-config-prettier:
+        specifier: ^9.1.0
+        version: 9.1.0(eslint@9.13.0)
       eslint-plugin-solid:
         specifier: ^0.14.3
         version: 0.14.3(eslint@9.13.0)(typescript@5.3.3)
       globals:
         specifier: ^15.11.0
         version: 15.11.0
+      prettier:
+        specifier: 3.3.3
+        version: 3.3.3
       storybook:
         specifier: ^8.3.6
         version: 8.3.6
@@ -952,6 +958,12 @@ packages:
     resolution: {integrity: sha512-TtpcNJ3XAzx3Gq8sWRzJaVajRs0uVxA2YAkdb1jm2YkPz4G6egUFAyA3n5vtEIZefPk5Wa4UXbKuS5fKkJWdgA==}
     engines: {node: '>=10'}
 
+  eslint-config-prettier@9.1.0:
+    resolution: {integrity: sha512-NSWl5BFQWEPi1j4TjVNItzYV7dZXZ+wP6I6ZhrBGpChQhZRUaElihE9uRRkcbRnNb76UMKDF3r+WTmNcGPKsqw==}
+    hasBin: true
+    peerDependencies:
+      eslint: '>=7.0.0'
+
   eslint-plugin-solid@0.14.3:
     resolution: {integrity: sha512-eDeyPrijSjVGeyb4oKoyidgLlMDZwAg/YdxiY9QvGXl2kLgpcHvLpgpaGK4KJ8xSsg0ym3B2dPRBAIlT7iUrEQ==}
     engines: {node: '>=18.0.0'}
@@ -1449,6 +1461,11 @@ packages:
   prelude-ls@1.2.1:
     resolution: {integrity: sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==}
     engines: {node: '>= 0.8.0'}
+
+  prettier@3.3.3:
+    resolution: {integrity: sha512-i2tDNA0O5IrMO757lfrdQZCc2jPNDVntV0m/+4whiDfWaTKfMNgR7Qz0NAeGz/nRqF4m5/6CLzbP4/liHt12Ew==}
+    engines: {node: '>=14'}
+    hasBin: true
 
   process@0.11.10:
     resolution: {integrity: sha512-cdGef/drWFoydD1JsMzuFf8100nZl+GT+yacc2bEced5f9Rjk4z+WtFUTBu9PhOi9j/jfmBPu0mMEY4wIdAF8A==}
@@ -2686,6 +2703,10 @@ snapshots:
 
   escape-string-regexp@4.0.0: {}
 
+  eslint-config-prettier@9.1.0(eslint@9.13.0):
+    dependencies:
+      eslint: 9.13.0
+
   eslint-plugin-solid@0.14.3(eslint@9.13.0)(typescript@5.3.3):
     dependencies:
       '@typescript-eslint/utils': 8.12.2(eslint@9.13.0)(typescript@5.3.3)
@@ -3186,6 +3207,8 @@ snapshots:
       source-map-js: 1.0.2
 
   prelude-ls@1.2.1: {}
+
+  prettier@3.3.3: {}
 
   process@0.11.10: {}
 
