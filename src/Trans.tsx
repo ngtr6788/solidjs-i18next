@@ -135,7 +135,7 @@ export const Trans: Component<TransProps> = (props) => {
   const emptyChildrenButNeedsHandling = () => {
     const translateStr = translation();
     return translateStr && keepRegex.test(translateStr);
-  }
+  };
 
   const components = () => props.components ?? childrenArray();
 
@@ -161,89 +161,92 @@ export const Trans: Component<TransProps> = (props) => {
     jsxNodes: readonly JSXElement[] | Record<string, JSXElement>,
     astNodes: IDom[],
   ) => {
-    return astNodes.reduce((mem, node) => {
-      if (node.type === "text") {
-        const content = i18n.services.interpolator.interpolate(
-          node.content || "",
-          opts(),
-          i18n.language,
-          {}
-        );
-        mem.push(content);
-      } else if (node.type === "tag") {
-        const nodes = jsxNodes as {
-          [key: string | number]: JSXElement;
-        };
-        const child = nodes[parseInt(node.name, 10)] ??
-          nodes[node.name] ?? {};
-
-        if (typeof child === "string") {
-          const value = i18n.services.interpolator.interpolate(
-            child,
+    return astNodes.reduce(
+      (mem, node) => {
+        if (node.type === "text") {
+          const content = i18n.services.interpolator.interpolate(
+            node.content || "",
             opts(),
             i18n.language,
             {},
           );
-          mem.push(value);
-        } else if (child instanceof Element) {
-          if (child.nodeType === Node.TEXT_NODE) {
+          mem.push(content);
+        } else if (node.type === "tag") {
+          const nodes = jsxNodes as {
+            [key: string | number]: JSXElement;
+          };
+          const child =
+            nodes[parseInt(node.name, 10)] ?? nodes[node.name] ?? {};
+
+          if (typeof child === "string") {
             const value = i18n.services.interpolator.interpolate(
-              child.textContent ?? "",
+              child,
               opts(),
               i18n.language,
               {},
             );
             mem.push(value);
-          } else {
-            const childChildren = buildContent(
-              [...child.childNodes],
-              node.children,
+          } else if (child instanceof Element) {
+            if (child.nodeType === Node.TEXT_NODE) {
+              const value = i18n.services.interpolator.interpolate(
+                child.textContent ?? "",
+                opts(),
+                i18n.language,
+                {},
+              );
+              mem.push(value);
+            } else {
+              const childChildren = buildContent(
+                [...child.childNodes],
+                node.children,
+              );
+              if (childChildren.length === 0 && child.hasChildNodes()) {
+                const childDeepClone = child.cloneNode(true) as Element;
+                mem.push(childDeepClone);
+              } else {
+                const childShallowClone = child.cloneNode(false) as Element;
+                childShallowClone.replaceChildren(...childChildren);
+                mem.push(childShallowClone);
+              }
+            }
+          } else if (Number.isNaN(parseFloat(node.name))) {
+            if (keepArray.includes(node.name)) {
+              const elem = document.createElement(node.name);
+              if (node.voidElement) {
+                mem.push(elem);
+              } else {
+                const childChildren = buildContent([], node.children);
+                elem.replaceChildren(...childChildren);
+                mem.push(elem);
+              }
+            } else if (node.voidElement) {
+              mem.push(`<${node.name}></${node.name}>`);
+            } else {
+              const inner = buildContent([], node.children)
+                .map((x) => (typeof x === "string" ? x : x.outerHTML))
+                .join();
+              mem.push(`<${node.name}>${inner}</${node.name}>`);
+            }
+          } else if (typeof child === "object" && !(child instanceof Element)) {
+            const nodeContent = node.children?.[0]?.content;
+            const translationContent = i18n.services.interpolator.interpolate(
+              nodeContent ?? "",
+              opts(),
+              i18n.language,
+              {},
             );
-            if (childChildren.length === 0 && child.hasChildNodes()) {
-              const childDeepClone = child.cloneNode(true) as Element;
-              mem.push(childDeepClone);
-            } else {
-              const childShallowClone = child.cloneNode(false) as Element;
-              childShallowClone.replaceChildren(...childChildren);
-              mem.push(childShallowClone);
-            }
-          }
-        } else if (Number.isNaN(parseFloat(node.name))) {
-          if (keepArray.includes(node.name)) {
-            const elem = document.createElement(node.name);
-            if (node.voidElement) {
-              mem.push(elem);
-            } else {
-              const childChildren = buildContent([], node.children);
-              elem.replaceChildren(...childChildren);
-              mem.push(elem);
-            }
-          } else if (node.voidElement) {
-            mem.push(`<${node.name}></${node.name}>`);
-          } else {
-            const inner = buildContent([], node.children)
-              .map((x) => (typeof x === "string" ? x : x.outerHTML))
-              .join();
-            mem.push(`<${node.name}>${inner}</${node.name}>`);
-          }
-        } else if (typeof child === 'object' && !(child instanceof Element)) {
-          const nodeContent = node.children?.[0]?.content;
-          const translationContent = i18n.services.interpolator.interpolate(
-            nodeContent ?? "",
-            opts(),
-            i18n.language,
-            {},
-          );
 
-          if (translationContent) {
-            mem.push(translationContent);
+            if (translationContent) {
+              mem.push(translationContent);
+            }
+          } else {
+            // TODO: What case would lead us here?
           }
-        } else {
-          // TODO: What case would lead us here?
         }
-      }
-      return mem;
-    }, [] as (string | Element)[]);
+        return mem;
+      },
+      [] as (string | Element)[],
+    );
   };
 
   const content = () => {

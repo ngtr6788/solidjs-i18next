@@ -31,9 +31,8 @@ function loadLanguages(
   namespaces: string | readonly string[],
   callback: Callback,
 ) {
-  const namespacesArray = (typeof namespaces === "string")
-    ? [namespaces]
-    : namespaces;
+  const namespacesArray =
+    typeof namespaces === "string" ? [namespaces] : namespaces;
 
   namespacesArray.forEach((namespace) => {
     if (i18n.options?.ns && i18n.options.ns.indexOf(namespace) < 0) {
@@ -91,7 +90,7 @@ export function useTranslation(
   const ready = () =>
     (i18n.isInitialized || i18n.initializedStoreOnce) &&
     namespaces().every((ns) =>
-      hasLoadedNamespace(i18n, ns, lng() || undefined)
+      hasLoadedNamespace(i18n, ns, lng() || undefined),
     );
 
   const loadLanguageNamespaces = (callback: Callback) => {
@@ -106,7 +105,7 @@ export function useTranslation(
   const loadLngNsT = async (): Promise<ReturnType<typeof getT>> => {
     if (!ready() && untrack(useSuspense)) {
       return await new Promise((resolve) =>
-        loadLanguageNamespaces(() => resolve(getT()))
+        loadLanguageNamespaces(() => resolve(getT())),
       );
     } else {
       return getT();
@@ -129,7 +128,8 @@ export function useTranslation(
   });
 
   createEffect((prevNamespaces: readonly string[]) => {
-    const differentNamespaces = prevNamespaces.length !== namespaces().length ||
+    const differentNamespaces =
+      prevNamespaces.length !== namespaces().length ||
       namespaces().some((val, i) => val !== prevNamespaces[i]);
 
     if (ready() && differentNamespaces) {

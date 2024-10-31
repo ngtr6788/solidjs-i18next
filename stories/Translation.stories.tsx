@@ -7,26 +7,26 @@ const i18nextInit = {
   resources: {
     en: {
       translation: {
-        "button": "Button in english",
-        "special": {
-          "button": "Special button in english"
-        }
+        button: "Button in english",
+        special: {
+          button: "Special button in english",
+        },
       },
       informal: {
-        "button": "Clicky thing in english"
-      }
+        button: "Clicky thing in english",
+      },
     },
     fr: {
       translation: {
-        "button": "Button in french",
-        "special": {
-          "button": "Special button in french"
-        }
+        button: "Button in french",
+        special: {
+          button: "Special button in french",
+        },
       },
       informal: {
-        "button": "Clicky thing in english"
-      }
-    }
+        button: "Clicky thing in english",
+      },
+    },
   },
   fallbackLng: "en",
 };
@@ -43,18 +43,17 @@ const meta: Meta = {
           <Story />
         </I18NextProvider>
       ) as Element;
-    }
-  ]
+    },
+  ],
 };
 
 export default meta;
 
 export const UseTProp: StoryObj = {
-  render: () => (
-    <Translation>
-      {(t) => <p>{t("special.button")}</p>}
-    </Translation>
-  ) as Element
+  render: () =>
+    (
+      <Translation>{(t) => <p>{t("special.button")}</p>}</Translation>
+    ) as Element,
 };
 
 export const ChangeLanguage: StoryObj = {
@@ -77,7 +76,7 @@ export const ChangeLanguage: StoryObj = {
         }}
       </Translation>
     ) as Element;
-  }
+  },
 };
 
 export const TranslationLngProp: StoryObj = {
@@ -91,9 +90,7 @@ export const TranslationLngProp: StoryObj = {
     return (
       <>
         <button on:click={handleClick}>Change language</button>
-        <Translation lng={lng()}>
-          {(t) => <p>{t("button")}</p>}
-        </Translation>
+        <Translation lng={lng()}>{(t) => <p>{t("button")}</p>}</Translation>
       </>
     ) as Element;
   },
@@ -115,7 +112,7 @@ export const TranslationKeyPrefixProp: StoryObj = {
         </Translation>
       </>
     ) as Element;
-  }
+  },
 };
 
 export const TranslationNamespaceProp: StoryObj = {
@@ -129,10 +126,8 @@ export const TranslationNamespaceProp: StoryObj = {
     return (
       <>
         <button on:click={handleClick}>Change namespace</button>
-        <Translation ns={ns()}>
-          {(t) => <p>{t("button")}</p>}
-        </Translation>
+        <Translation ns={ns()}>{(t) => <p>{t("button")}</p>}</Translation>
       </>
     ) as Element;
-  }
+  },
 };

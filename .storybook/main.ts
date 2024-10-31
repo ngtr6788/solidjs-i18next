@@ -10,7 +10,7 @@ const config: StorybookConfig = {
   ],
   framework: {
     name: "@storybook/html-vite",
-    options: {}
-  }
+    options: {},
+  },
 };
 export default config;

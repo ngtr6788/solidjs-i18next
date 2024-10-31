@@ -4,22 +4,21 @@ import solid from "eslint-plugin-solid/configs/typescript";
 import tseslint from "typescript-eslint";
 import eslintConfigPrettier from "eslint-config-prettier";
 
-
 /** @type {import('eslint').Linter.Config[]} */
 export default [
   {
-    files: ["**/*.{js,mjs,cjs,ts}"]
+    files: ["**/*.{js,mjs,cjs,ts}"],
   },
   {
     languageOptions: {
-      globals: globals.browser
-    }
+      globals: globals.browser,
+    },
   },
   pluginJs.configs.recommended,
   ...tseslint.configs.recommended,
   {
     files: ["**/*.{ts,tsx}"],
-    ...solid
+    ...solid,
   },
-  eslintConfigPrettier
+  eslintConfigPrettier,
 ];

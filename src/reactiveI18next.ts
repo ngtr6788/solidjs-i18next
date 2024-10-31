@@ -35,21 +35,24 @@ class ReactiveI18n implements i18n {
       isInitializing: this.#i18n.isInitializing,
       initializedStoreOnce: this.#i18n.initializedStoreOnce,
       initializedLanguageOnce: this.#i18n.initializedLanguageOnce,
-    })
+    });
     this.#i18nStore = i18nStore;
 
     createEffect(() => {
       this.#i18nTrack();
 
-      setI18nStore(produce(i18nStore => {
-        i18nStore.language = this.#i18n.language;
-        i18nStore.languages = this.#i18n.languages;
-        i18nStore.isInitialized = this.#i18n.isInitialized;
-        i18nStore.isInitializing = this.#i18n.isInitializing;
-        i18nStore.initializedStoreOnce = this.#i18n.initializedStoreOnce;
-        i18nStore.initializedLanguageOnce = this.#i18n.initializedLanguageOnce;
-      }))
-    })
+      setI18nStore(
+        produce((i18nStore) => {
+          i18nStore.language = this.#i18n.language;
+          i18nStore.languages = this.#i18n.languages;
+          i18nStore.isInitialized = this.#i18n.isInitialized;
+          i18nStore.isInitializing = this.#i18n.isInitializing;
+          i18nStore.initializedStoreOnce = this.#i18n.initializedStoreOnce;
+          i18nStore.initializedLanguageOnce =
+            this.#i18n.initializedLanguageOnce;
+        }),
+      );
+    });
   }
 
   // @ts-ignore
@@ -98,7 +101,7 @@ class ReactiveI18n implements i18n {
   }
 
   getDataByLanguage(
-    lng: string
+    lng: string,
   ): { [key: string]: { [key: string]: string } } | undefined {
     this.#i18nTrack();
     return this.#i18n.getDataByLanguage(lng);
@@ -107,7 +110,7 @@ class ReactiveI18n implements i18n {
   getFixedT<
     Ns extends Namespace | null = "translation",
     TKPrefix extends KeyPrefix<ActualNs> = undefined,
-    ActualNs extends Namespace = Ns extends null ? "translation" : Ns
+    ActualNs extends Namespace = Ns extends null ? "translation" : Ns,
   >(
     ...args:
       | [lng: string | readonly string[], ns?: Ns, keyPrefix?: TKPrefix]
@@ -144,10 +147,10 @@ class ReactiveI18n implements i18n {
         i18n: i18n,
         loadNotPending: (
           lng: string | readonly string[],
-          ns: string | readonly string[]
-        ) => boolean
+          ns: string | readonly string[],
+        ) => boolean,
       ) => boolean | undefined;
-    }
+    },
   ): boolean {
     this.#i18nTrack();
     return this.#i18n.hasLoadedNamespace(ns, options);
@@ -155,7 +158,7 @@ class ReactiveI18n implements i18n {
 
   async loadNamespaces(
     ns: string | readonly string[],
-    callback?: Callback
+    callback?: Callback,
   ): Promise<void> {
     await this.#i18n.loadNamespaces(ns, callback);
     this.#i18nDirty();
@@ -163,7 +166,7 @@ class ReactiveI18n implements i18n {
 
   async loadLanguages(
     lngs: string | readonly string[],
-    callback?: Callback
+    callback?: Callback,
   ): Promise<void> {
     await this.#i18n.loadLanguages(lngs, callback);
     this.#i18nDirty();
@@ -172,19 +175,19 @@ class ReactiveI18n implements i18n {
   reloadResources(
     lngs?: string | readonly string[],
     ns?: string | readonly string[],
-    callback?: () => void
+    callback?: () => void,
   ): Promise<void>;
 
   async reloadResources(
     lngs: null,
     ns: string | readonly string[],
-    callback?: () => void
+    callback?: () => void,
   ): Promise<void>;
 
   async reloadResources(
     lngs: any,
     ns: any,
-    callback?: () => void
+    callback?: () => void,
   ): Promise<void> {
     await this.#i18n.reloadResources(lngs, ns, callback);
     this.#i18nDirty();
@@ -211,7 +214,7 @@ class ReactiveI18n implements i18n {
 
   createReactiveInstance(
     options?: InitOptions,
-    callback?: Callback
+    callback?: Callback,
   ): ReactiveI18n {
     const newI18n = this.#i18n.createInstance(options, callback);
     const reactiveI18n = new ReactiveI18n(newI18n);
@@ -224,7 +227,7 @@ class ReactiveI18n implements i18n {
 
   cloneReactiveInstance(
     options?: CloneOptions,
-    callback?: Callback
+    callback?: Callback,
   ): ReactiveI18n {
     const newI18n = this.#i18n.cloneInstance(options, callback);
     const reactiveI18n = new ReactiveI18n(newI18n);
@@ -233,14 +236,14 @@ class ReactiveI18n implements i18n {
 
   on(
     event: Parameters<i18n["on"]>[0],
-    listener: Parameters<i18n["on"]>[1]
+    listener: Parameters<i18n["on"]>[1],
   ): void {
     return this.#i18n.on(event, listener);
   }
 
   off(
     event: Parameters<i18n["off"]>[0],
-    listener: Parameters<i18n["off"]>[1]
+    listener: Parameters<i18n["off"]>[1],
   ): void {
     return this.#i18n.off(event, listener);
   }
@@ -249,7 +252,7 @@ class ReactiveI18n implements i18n {
     lng: string,
     ns: string,
     key: string,
-    options?: Pick<InitOptions, "keySeparator" | "ignoreJSONStructure">
+    options?: Pick<InitOptions, "keySeparator" | "ignoreJSONStructure">,
   ) {
     this.#i18nTrack();
     return this.#i18n.getResource(lng, ns, key, options);
@@ -260,7 +263,7 @@ class ReactiveI18n implements i18n {
     ns: string,
     key: string,
     value: string,
-    options?: { keySeparator?: string; silent?: boolean }
+    options?: { keySeparator?: string; silent?: boolean },
   ): i18n {
     const i18n = this.#i18n.addResource(lng, ns, key, value, options);
     this.#i18nDirty();
@@ -278,9 +281,15 @@ class ReactiveI18n implements i18n {
     ns: string,
     resources: any,
     deep?: boolean,
-    overwrite?: boolean
+    overwrite?: boolean,
   ): i18n {
-    const i18n = this.#i18n.addResourceBundle(lng, ns, resources, deep, overwrite);
+    const i18n = this.#i18n.addResourceBundle(
+      lng,
+      ns,
+      resources,
+      deep,
+      overwrite,
+    );
     this.#i18nDirty();
     return i18n;
   }

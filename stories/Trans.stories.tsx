@@ -12,8 +12,10 @@ const i18nInit = {
           "To learn <italics>a whole lot</italics> more, click <CustomLink>here</CustomLink>",
         "bold-italics-underline":
           "Number <1>one</1>, number <3>three</3>, number <6>six</6>",
-        "hello-name-have-number": "Hello {{name}}, you have {{numEmails}} unread emails today.",
-        "greetings-name-number": "You, there, currently have {{numEmails}} letters in the mail, {{name}}"
+        "hello-name-have-number":
+          "Hello {{name}}, you have {{numEmails}} unread emails today.",
+        "greetings-name-number":
+          "You, there, currently have {{numEmails}} letters in the mail, {{name}}",
       },
     },
   },
@@ -94,26 +96,30 @@ export const WithInterpolation = {
 
     const setHelloNameHaveNumber = () => {
       setI18nKey("hello-name-have-number");
-    }
+    };
 
     const setGreetingsNameNumber = () => {
       setI18nKey("greetings-name-number");
-    }
+    };
 
     const setDefault = () => {
       setI18nKey("");
-    }
+    };
 
     return (
       <div>
         <button on:click={setDefault}>Default</button>
-        <button on:click={setHelloNameHaveNumber}>hello-have-name-number</button>
+        <button on:click={setHelloNameHaveNumber}>
+          hello-have-name-number
+        </button>
         <button on:click={setGreetingsNameNumber}>greeings-name-number</button>
-        <Trans i18nKey={i18nKey()}>Someone with the name {{ name }} has email count of {{ numEmails }}</Trans>
+        <Trans i18nKey={i18nKey()}>
+          Someone with the name {{ name }} has email count of {{ numEmails }}
+        </Trans>
       </div>
     );
-  }
-}
+  },
+};
 
 export const SomeHaveInterpolationSomeDoNot = {
   render: () => {
@@ -124,18 +130,22 @@ export const SomeHaveInterpolationSomeDoNot = {
 
     const setBoldItalicsUnderline = () => {
       setI18nKey("bold-italics-underline");
-    }
+    };
 
     const setHelloNameHaveNumber = () => {
       setI18nKey("hello-name-have-number");
-    }
+    };
 
     return (
       <div>
-        <button on:click={setBoldItalicsUnderline}>bold-italics-underline</button>
-        <button on:click={setHelloNameHaveNumber}>hello-have-name-number</button>
-        <Trans i18nKey={i18nKey()} values={{ name, numEmails }}/>
+        <button on:click={setBoldItalicsUnderline}>
+          bold-italics-underline
+        </button>
+        <button on:click={setHelloNameHaveNumber}>
+          hello-have-name-number
+        </button>
+        <Trans i18nKey={i18nKey()} values={{ name, numEmails }} />
       </div>
     );
-  }
-}
+  },
+};
