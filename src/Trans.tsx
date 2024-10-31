@@ -5,7 +5,6 @@ import {
   type JSXElement,
   Show,
   useContext,
-  createEffect,
 } from "solid-js";
 import { type IDom, parse } from "html-parse-string";
 import { I18nContext } from "./I18NextProvider.tsx";
@@ -13,7 +12,7 @@ import { I18nContext } from "./I18NextProvider.tsx";
 type TransChild = JSXElement | Record<string, unknown>;
 
 interface TransProps {
-  i18nKey: string;
+  i18nKey?: string;
   count?: number;
   context?: string;
   values?: Record<string, unknown>;
@@ -133,8 +132,10 @@ export const Trans: Component<TransProps> = (props) => {
     return k ? t()(k, tOpts()) : defaultValue();
   };
 
-  const emptyChildrenButNeedsHandling = () =>
-    translation() && keepRegex.test(translation());
+  const emptyChildrenButNeedsHandling = () => {
+    const translateStr = translation();
+    return translateStr && keepRegex.test(translateStr);
+  }
 
   const components = () => props.components ?? childrenArray();
 
@@ -174,7 +175,7 @@ export const Trans: Component<TransProps> = (props) => {
           [key: string | number]: JSXElement;
         };
         const child = nodes[parseInt(node.name, 10)] ??
-          nodes[node.name];
+          nodes[node.name] ?? {};
 
         if (typeof child === "string") {
           const value = i18n.services.interpolator.interpolate(
@@ -225,6 +226,20 @@ export const Trans: Component<TransProps> = (props) => {
               .join();
             mem.push(`<${node.name}>${inner}</${node.name}>`);
           }
+        } else if (typeof child === 'object' && !(child instanceof Element)) {
+          const nodeContent = node.children?.[0]?.content;
+          const translationContent = i18n.services.interpolator.interpolate(
+            nodeContent ?? "",
+            opts(),
+            i18n.language,
+            {},
+          );
+
+          if (translationContent) {
+            mem.push(translationContent);
+          }
+        } else {
+          // TODO: What case would lead us here?
         }
       }
       return mem;
