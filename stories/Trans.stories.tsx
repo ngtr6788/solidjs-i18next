@@ -1,6 +1,6 @@
 import { type Meta } from "@storybook/html";
 import i18next from "i18next";
-import { createSignal } from "solid-js";
+import { createSignal, type JSXElement } from "solid-js";
 
 import { I18NextProvider, Trans } from "../src";
 
@@ -128,6 +128,9 @@ export const SomeHaveInterpolationSomeDoNot = {
     const numEmails = 103;
 
     const [i18nKey, setI18nKey] = createSignal("bold-italics-underline");
+    const [comps, setComps] = createSignal<Array<JSXElement> | undefined>(
+      undefined,
+    );
 
     const setBoldItalicsUnderline = () => {
       setI18nKey("bold-italics-underline");
@@ -135,6 +138,10 @@ export const SomeHaveInterpolationSomeDoNot = {
 
     const setHelloNameHaveNumber = () => {
       setI18nKey("hello-name-have-number");
+    };
+
+    const toggleComponentArray = () => {
+      setComps((comps) => (comps === undefined ? [] : undefined));
     };
 
     return (
@@ -145,8 +152,53 @@ export const SomeHaveInterpolationSomeDoNot = {
         <button on:click={setHelloNameHaveNumber}>
           hello-have-name-number
         </button>
-        <Trans i18nKey={i18nKey()} values={{ name, numEmails }} />
+        <button on:click={toggleComponentArray}>
+          Toggle empty component array
+        </button>
+        <Trans
+          i18nKey={i18nKey()}
+          values={{ name, numEmails }}
+          components={comps()}
+        />
       </div>
+    );
+  },
+};
+
+export const InterpolationValuesChange = {
+  render: () => {
+    const [values, setValues] = createSignal<
+      { name: string; numEmails: number } | undefined
+    >({
+      name: "John",
+      numEmails: 1024,
+    });
+
+    const handleMinh = () => {
+      setValues({
+        name: "Minh",
+        numEmails: 1729,
+      });
+    };
+
+    const handleJohn = () => {
+      setValues({
+        name: "John",
+        numEmails: 1024,
+      });
+    };
+
+    const handleUndefined = () => {
+      setValues(undefined);
+    };
+
+    return (
+      <>
+        <button on:click={handleJohn}>John</button>
+        <button on:click={handleMinh}>Minh</button>
+        <button on:click={handleUndefined}>undefined</button>
+        <Trans i18nKey="hello-name-have-number" values={values()} />
+      </>
     );
   },
 };
