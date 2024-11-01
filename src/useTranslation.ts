@@ -1,8 +1,9 @@
-import i18next, {
-  type Callback,
-  type i18n,
-  type Namespace,
-  type TFunction,
+import i18next from "i18next";
+import type {
+  Callback,
+  i18n,
+  Namespace,
+  TFunction,
 } from "i18next";
 import {
   createEffect,

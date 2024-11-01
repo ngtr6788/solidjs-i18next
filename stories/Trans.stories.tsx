@@ -1,4 +1,4 @@
-import { Meta } from "@storybook/html";
+import { type Meta } from "@storybook/html";
 import { I18NextProvider, Trans } from "../src";
 import i18next from "i18next";
 import { createSignal } from "solid-js";

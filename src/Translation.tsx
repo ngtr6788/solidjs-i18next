@@ -1,6 +1,9 @@
 import { splitProps, type Component, type JSXElement } from "solid-js";
-import { useTranslation, UseTranslationOptions } from "./useTranslation.ts";
-import type { i18n, TFunction } from "i18next";
+import {
+  useTranslation,
+  type UseTranslationOptions,
+} from "./useTranslation.ts";
+import { type i18n, type TFunction } from "i18next";
 
 interface TranslationProps extends UseTranslationOptions {
   children: (t: TFunction, i18n: i18n) => JSXElement;

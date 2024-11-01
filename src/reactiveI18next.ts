@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import i18next, {
+import type {
   Callback,
   CloneOptions,
   InitOptions,
@@ -9,8 +9,8 @@ import i18next, {
   Newable,
   NewableModule,
   TFunction,
-  type i18n,
 } from "i18next";
+import i18next, { type i18n } from "i18next";
 import { createTrigger } from "@solid-primitives/trigger";
 import { createEffect, useContext } from "solid-js";
 import { createStore, produce } from "solid-js/store";

@@ -1,7 +1,7 @@
 import i18next from "i18next";
 import { I18NextProvider } from "../src";
 import { batch, createEffect } from "solid-js";
-import { Meta } from "@storybook/html";
+import { type Meta } from "@storybook/html";
 import { createReactiveI18n } from "../src/reactiveI18next";
 
 const i18nextInit = {
