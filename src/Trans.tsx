@@ -257,7 +257,9 @@ export const Trans: Component<TransProps> = (props) => {
   return (
     <Show when={translation()}>
       <Show
-        when={components() || emptyChildrenButNeedsHandling()}
+        when={
+          props.components ?? props.children ?? emptyChildrenButNeedsHandling()
+        }
         fallback={translation()}
       >
         {content()}
