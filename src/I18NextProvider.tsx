@@ -1,5 +1,5 @@
-import { createContext, type ParentComponent } from "solid-js";
 import { type i18n, type Namespace } from "i18next";
+import { createContext, type ParentComponent } from "solid-js";
 
 interface I18nContextObject {
   i18n: i18n;

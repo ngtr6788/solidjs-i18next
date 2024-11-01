@@ -1,3 +1,4 @@
+import { type IDom, parse } from "html-parse-string";
 import i18next, { type i18n, type TFunction } from "i18next";
 import {
   children,
@@ -6,7 +7,7 @@ import {
   Show,
   useContext,
 } from "solid-js";
-import { type IDom, parse } from "html-parse-string";
+
 import { I18nContext } from "./I18NextProvider.tsx";
 
 type TransChild = JSXElement | Record<string, unknown>;

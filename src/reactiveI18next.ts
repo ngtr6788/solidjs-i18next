@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { createTrigger } from "@solid-primitives/trigger";
 import type {
   Callback,
   CloneOptions,
@@ -11,9 +12,9 @@ import type {
   TFunction,
 } from "i18next";
 import i18next, { type i18n } from "i18next";
-import { createTrigger } from "@solid-primitives/trigger";
 import { createEffect, useContext } from "solid-js";
 import { createStore, produce } from "solid-js/store";
+
 import { I18nContext } from "./I18NextProvider";
 
 class ReactiveI18n implements i18n {

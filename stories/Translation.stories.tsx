@@ -1,7 +1,8 @@
+import { type Meta, type StoryObj } from "@storybook/html";
 import i18next from "i18next";
-import { I18NextProvider, Translation } from "../src";
 import { createSignal } from "solid-js";
-import { type StoryObj, type Meta } from "@storybook/html";
+
+import { I18NextProvider, Translation } from "../src";
 
 const i18nextInit = {
   resources: {

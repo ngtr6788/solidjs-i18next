@@ -1,10 +1,10 @@
-import i18next from "i18next";
 import type {
   Callback,
   i18n,
   Namespace,
   TFunction,
 } from "i18next";
+import i18next from "i18next";
 import {
   createEffect,
   createResource,
@@ -12,6 +12,7 @@ import {
   untrack,
   useContext,
 } from "solid-js";
+
 import { I18nContext } from "./I18NextProvider.tsx";
 
 function hasLoadedNamespace(
