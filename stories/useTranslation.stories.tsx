@@ -2,7 +2,7 @@ import { type Meta, type StoryObj } from "@storybook/html";
 import i18next from "i18next";
 import { createSignal } from "solid-js";
 
-import { I18NextProvider,useTranslation } from "../src";
+import { I18NextProvider, useTranslation } from "../src";
 
 const i18nextInit = {
   resources: {
