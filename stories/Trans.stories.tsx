@@ -128,7 +128,7 @@ export const WithInterpolation = {
   },
 };
 
-export const SomeHaveInterpolationSomeDoNot = {
+export const TranslationsWithAndWithoutInterpolation = {
   render: () => {
     const name = "Minh";
     const numEmails = 103;
@@ -209,7 +209,7 @@ export const InterpolationValuesChange = {
   },
 };
 
-export const PluralsProp = {
+export const PluralsAndContextProps = {
   render: () => {
     const [count, setCount] = createSignal(0);
     const [context, setContext] = createSignal("male");
@@ -264,6 +264,25 @@ export const PluralsProp = {
         <p>
           <Trans i18nKey="actors" count={count()} context={context()} />
         </p>
+      </>
+    );
+  },
+};
+
+export const UseDefaultValue = {
+  render: () => {
+    const [defaultValue, setDefaultValue] = createSignal("");
+
+    const toggleDefault = () => {
+      setDefaultValue((value) =>
+        value === "" ? "Use default value instead" : "",
+      );
+    };
+
+    return (
+      <>
+        <button on:click={toggleDefault}>Toggle default value</button>
+        <Trans i18nKey="non-existant-key" defaultValue={defaultValue()} />
       </>
     );
   },
