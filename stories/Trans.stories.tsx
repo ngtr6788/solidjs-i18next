@@ -1,6 +1,6 @@
 import { type Meta } from "@storybook/html";
 import i18next from "i18next";
-import { createSignal, type JSXElement } from "solid-js";
+import { createSignal, type JSX, type JSXElement } from "solid-js";
 
 import { I18NextProvider, Trans } from "../src";
 
@@ -17,6 +17,12 @@ const i18nInit = {
           "Hello {{name}}, you have {{numEmails}} unread emails today.",
         "greetings-name-number":
           "You, there, currently have {{numEmails}} letters in the mail, {{name}}",
+        actors_male_zero: "No actors",
+        actors_male_one: "{{count}} actors",
+        actors_male_other: "{{count}} actors",
+        actors_female_zero: "No actresses",
+        actors_female_one: "{{one}} actress",
+        actors_female_other: "{{count}} actresses",
       },
     },
   },
@@ -198,6 +204,66 @@ export const InterpolationValuesChange = {
         <button on:click={handleMinh}>Minh</button>
         <button on:click={handleUndefined}>undefined</button>
         <Trans i18nKey="hello-name-have-number" values={values()} />
+      </>
+    );
+  },
+};
+
+export const PluralsProp = {
+  render: () => {
+    const [count, setCount] = createSignal(0);
+    const [context, setContext] = createSignal("male");
+
+    const handleInput: JSX.InputEventHandlerUnion<
+      HTMLInputElement,
+      InputEvent
+    > = (e) => {
+      const value = e.target.value;
+
+      // Check if the input is a nonnegative integer
+      // Prevent leading zeros unless the value is "0"
+      if (/^\d*$/.test(value)) {
+        setCount(Number(value));
+      }
+    };
+
+    const handleKeyDown: JSX.EventHandlerUnion<
+      HTMLInputElement,
+      KeyboardEvent
+    > = (e) => {
+      // Allow: backspace, delete, arrow keys
+      if (
+        e.key === "Backspace" ||
+        e.key === "Delete" ||
+        e.key === "ArrowLeft" ||
+        e.key === "ArrowRight"
+      ) {
+        return;
+      }
+
+      // Prevent any key that isn't a number
+      if (!/^\d$/.test(e.key)) {
+        e.preventDefault();
+      }
+    };
+
+    const handleContext = () => {
+      setContext((context) => (context === "male" ? "female" : "male"));
+    };
+
+    return (
+      <>
+        <button onClick={handleContext}>Toggle context (gender)</button>
+        <input
+          type="text"
+          value={count()}
+          onInput={handleInput}
+          onKeyDown={handleKeyDown}
+          placeholder="Type a nonnegative integer"
+        />
+        <p>
+          <Trans i18nKey="actors" count={count()} context={context()} />
+        </p>
       </>
     );
   },
