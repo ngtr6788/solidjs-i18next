@@ -1,6 +1,6 @@
 import { type Meta, type StoryObj } from "@storybook/html";
-import i18next from "i18next";
-import { createSignal } from "solid-js";
+import i18next, { type TFunction } from "i18next";
+import { createSignal, type JSX, type JSXElement } from "solid-js";
 
 import { I18NextProvider, Translation } from "../src";
 
@@ -130,5 +130,63 @@ export const TranslationNamespaceProp: StoryObj = {
         <Translation ns={ns()}>{(t) => <p>{t("button")}</p>}</Translation>
       </>
     ) as Element;
+  },
+};
+
+export const ChangeChildrenFunction = {
+  render: () => {
+    type TChildType = "link" | "button" | "text";
+
+    const link = (t: TFunction) => <a href="#">{t("button")}</a>;
+    const button = (t: TFunction) => <button>{t("informal:button")}</button>;
+    const text = (t: TFunction) => <p>{t("special.button")}</p>;
+
+    const translateMap: Record<TChildType, (t: TFunction) => JSXElement> = {
+      link,
+      button,
+      text,
+    };
+
+    const [currentFunc, setCurrentFunc] = createSignal<TChildType>("text");
+
+    const handleRadio: JSX.EventHandler<HTMLInputElement, MouseEvent> = (e) => {
+      // @ts-expect-error target cannot have value error for some reason
+      setCurrentFunc(e.target.value);
+    };
+
+    return (
+      <>
+        <div style={{ display: "flex", "flex-direction": "column" }}>
+          <label>
+            <input
+              type="radio"
+              value="link"
+              checked={currentFunc() === "link"}
+              on:click={handleRadio}
+            />
+            Link
+          </label>
+          <label>
+            <input
+              type="radio"
+              value="button"
+              checked={currentFunc() === "button"}
+              on:click={handleRadio}
+            />
+            Button
+          </label>
+          <label>
+            <input
+              type="radio"
+              value="text"
+              checked={currentFunc() === "text"}
+              on:click={handleRadio}
+            />
+            Text
+          </label>
+        </div>
+        <Translation>{translateMap[currentFunc()]}</Translation>
+      </>
+    );
   },
 };
