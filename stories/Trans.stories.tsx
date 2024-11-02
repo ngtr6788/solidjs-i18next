@@ -171,7 +171,7 @@ export const TranslationsWithAndWithoutInterpolation = {
   },
 };
 
-export const InterpolationValuesChange = {
+export const InterpolationValueObjectsChange = {
   render: () => {
     const [values, setValues] = createSignal<
       { name: string; numEmails: number } | undefined
@@ -204,6 +204,34 @@ export const InterpolationValuesChange = {
         <button on:click={handleMinh}>Minh</button>
         <button on:click={handleUndefined}>undefined</button>
         <Trans i18nKey="hello-name-have-number" values={values()} />
+      </>
+    );
+  },
+};
+
+export const InterpolationValueThemselvesChange = {
+  render: () => {
+    const [name, setName] = createSignal("John");
+    const [numEmails, setNumEmails] = createSignal(1024);
+
+    const handleMinh = () => {
+      setName("Minh");
+      setNumEmails(1729);
+    };
+
+    const handleJohn = () => {
+      setName("John");
+      setNumEmails(1024);
+    };
+
+    return (
+      <>
+        <button on:click={handleJohn}>John</button>
+        <button on:click={handleMinh}>Minh</button>
+        <Trans
+          i18nKey="hello-name-have-number"
+          values={{ name: name(), numEmails: numEmails() }}
+        />
       </>
     );
   },
