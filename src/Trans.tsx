@@ -159,22 +159,26 @@ export const Trans: Component<TransProps> = (props) => {
     return { ...data, ...tOpts() };
   };
 
+  const interpolate = (content: string | undefined | null) => {
+    const i18nInstance = untrack(i18n);
+    const translateOpts = untrack(opts);
+
+    return i18nInstance.services.interpolator.interpolate(
+      content ?? "",
+      translateOpts,
+      i18nInstance.language,
+      {},
+    );
+  };
+
   const buildContent = (
     jsxNodes: readonly JSXElement[] | Record<string, JSXElement>,
     astNodes: IDom[],
   ) => {
-    const i18nInstance = untrack(i18n);
-    const translateOpts = untrack(opts);
-
     return astNodes.reduce(
       (mem, node) => {
         if (node.type === "text") {
-          const content = i18nInstance.services.interpolator.interpolate(
-            node.content ?? "",
-            translateOpts,
-            i18nInstance.language,
-            {},
-          );
+          const content = interpolate(node.content);
           mem.push(content);
         } else if (node.type === "tag") {
           const nodes = jsxNodes as {
@@ -184,21 +188,11 @@ export const Trans: Component<TransProps> = (props) => {
             nodes[parseInt(node.name, 10)] ?? nodes[node.name] ?? {};
 
           if (typeof child === "string") {
-            const value = i18nInstance.services.interpolator.interpolate(
-              child,
-              translateOpts,
-              i18nInstance.language,
-              {},
-            );
+            const value = interpolate(child);
             mem.push(value);
           } else if (child instanceof Element) {
             if (child.nodeType === Node.TEXT_NODE) {
-              const value = i18nInstance.services.interpolator.interpolate(
-                child.textContent ?? "",
-                translateOpts,
-                i18nInstance.language,
-                {},
-              );
+              const value = interpolate(child.textContent);
               mem.push(value);
             } else {
               const childChildren = buildContent(
@@ -234,12 +228,7 @@ export const Trans: Component<TransProps> = (props) => {
             }
           } else if (typeof child === "object" && !(child instanceof Element)) {
             const nodeContent = node.children?.[0]?.content;
-            const translationContent = i18nInstance.services.interpolator.interpolate(
-              nodeContent ?? "",
-              translateOpts,
-              i18nInstance.language,
-              {},
-            );
+            const translationContent = interpolate(nodeContent);
 
             if (translationContent) {
               mem.push(translationContent);
