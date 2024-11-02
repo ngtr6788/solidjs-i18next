@@ -36,7 +36,7 @@ export const Trans: Component<TransProps> = (props) => {
 
   const i18n = () => props.i18n || i18nContext?.i18n || i18next;
 
-  const t = () => props.t || i18n().t.bind(i18n);
+  const t = () => props.t || i18n().t.bind(i18n());
 
   const namespaces = () => {
     const namespaces = props.ns || i18nContext?.ns || i18n().options?.defaultNS;
