@@ -1,8 +1,9 @@
+import { type Decorator } from "@storybook/html";
 import { render } from "solid-js/web";
 
 let disposeStory = () => {};
 
-export const decorators = [
+export const decorators: Decorator[] = [
   (Story) => {
     disposeStory();
     const solidRoot = document.createElement("div");

@@ -1,4 +1,4 @@
-import { StorybookConfig } from "@storybook/html-vite";
+import { type StorybookConfig } from "@storybook/html-vite";
 
 const config: StorybookConfig = {
   stories: ["../stories/**/*.stories.@(js|jsx|mjs|ts|tsx)"],
