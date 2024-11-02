@@ -5,6 +5,7 @@ import {
   type Component,
   type JSXElement,
   Show,
+  untrack,
   useContext,
 } from "solid-js";
 
@@ -33,12 +34,12 @@ export const Trans: Component<TransProps> = (props) => {
 
   const i18nContext = useContext(I18nContext);
 
-  const i18n = props.i18n || i18nContext?.i18n || i18next;
+  const i18n = () => props.i18n || i18nContext?.i18n || i18next;
 
-  const t = () => props.t || i18n.t.bind(i18n);
+  const t = () => props.t || i18n().t.bind(i18n);
 
   const namespaces = () => {
-    const namespaces = props.ns || i18nContext?.ns || i18n.options?.defaultNS;
+    const namespaces = props.ns || i18nContext?.ns || i18n().options?.defaultNS;
     const namespacesArray =
       typeof namespaces === "string"
         ? [namespaces]
@@ -108,7 +109,7 @@ export const Trans: Component<TransProps> = (props) => {
   const key = () => props.i18nKey || nodesAsString() || defaultValue();
 
   const values = () => {
-    const defaultVariables = i18n.options?.interpolation?.defaultVariables;
+    const defaultVariables = i18n().options?.interpolation?.defaultVariables;
     if (defaultVariables) {
       return props.values && Object.keys(props.values).length > 0
         ? { ...props.values, ...defaultVariables }
@@ -162,13 +163,16 @@ export const Trans: Component<TransProps> = (props) => {
     jsxNodes: readonly JSXElement[] | Record<string, JSXElement>,
     astNodes: IDom[],
   ) => {
+    const i18nInstance = untrack(i18n);
+    const translateOpts = untrack(opts);
+
     return astNodes.reduce(
       (mem, node) => {
         if (node.type === "text") {
-          const content = i18n.services.interpolator.interpolate(
-            node.content || "",
-            opts(),
-            i18n.language,
+          const content = i18nInstance.services.interpolator.interpolate(
+            node.content ?? "",
+            translateOpts,
+            i18nInstance.language,
             {},
           );
           mem.push(content);
@@ -180,19 +184,19 @@ export const Trans: Component<TransProps> = (props) => {
             nodes[parseInt(node.name, 10)] ?? nodes[node.name] ?? {};
 
           if (typeof child === "string") {
-            const value = i18n.services.interpolator.interpolate(
+            const value = i18nInstance.services.interpolator.interpolate(
               child,
-              opts(),
-              i18n.language,
+              translateOpts,
+              i18nInstance.language,
               {},
             );
             mem.push(value);
           } else if (child instanceof Element) {
             if (child.nodeType === Node.TEXT_NODE) {
-              const value = i18n.services.interpolator.interpolate(
+              const value = i18nInstance.services.interpolator.interpolate(
                 child.textContent ?? "",
-                opts(),
-                i18n.language,
+                translateOpts,
+                i18nInstance.language,
                 {},
               );
               mem.push(value);
@@ -230,10 +234,10 @@ export const Trans: Component<TransProps> = (props) => {
             }
           } else if (typeof child === "object" && !(child instanceof Element)) {
             const nodeContent = node.children?.[0]?.content;
-            const translationContent = i18n.services.interpolator.interpolate(
+            const translationContent = i18nInstance.services.interpolator.interpolate(
               nodeContent ?? "",
-              opts(),
-              i18n.language,
+              translateOpts,
+              i18nInstance.language,
               {},
             );
 

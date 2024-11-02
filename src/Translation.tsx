@@ -15,5 +15,5 @@ export const Translation: Component<TranslationProps> = (props) => {
 
   const [t, i18n] = useTranslation(options);
 
-  return ch.children(t, i18n);
+  return <>{ch.children(t, i18n)}</>;
 };

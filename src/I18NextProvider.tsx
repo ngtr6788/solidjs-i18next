@@ -9,9 +9,7 @@ interface I18nContextObject {
 export const I18nContext = createContext<I18nContextObject>();
 
 export const I18NextProvider: ParentComponent<I18nContextObject> = (props) => {
-  const value = { i18n: props.i18n, ns: props.ns };
-
   return (
-    <I18nContext.Provider value={value}>{props.children}</I18nContext.Provider>
+    <I18nContext.Provider value={props}>{props.children}</I18nContext.Provider>
   );
 };
