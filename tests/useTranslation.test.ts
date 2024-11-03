@@ -1,8 +1,8 @@
 import { renderHook } from "@solidjs/testing-library";
 import i18next from "i18next";
-import { createEffect, createSignal } from "solid-js";
+import { createEffect, createSignal, runWithOwner } from "solid-js";
 import { createStore, produce } from "solid-js/store";
-import { beforeEach, describe, expect, onTestFinished, test, vi } from "vitest";
+import { describe, expect, onTestFinished, test, vi } from "vitest";
 
 import { useTranslation } from "../src";
 
@@ -37,8 +37,6 @@ const i18nextInit = {
 i18next.init(i18nextInit);
 
 describe("useTranslation tests", () => {
-  beforeEach(() => {});
-
   test("i18n.language change", () => {
     const {
       result: [t, i18n],
@@ -118,6 +116,7 @@ describe("useTranslation tests", () => {
 
     const {
       result: [t],
+      owner,
     } = renderHook(useTranslation, {
       initialProps: [
         {
@@ -129,9 +128,11 @@ describe("useTranslation tests", () => {
     });
 
     const test = vi.fn();
-    createEffect(() => {
-      t("button");
-      test();
+    runWithOwner(owner, () => {
+      createEffect(() => {
+        t("button");
+        test();
+      }, true);
     });
     test.mockClear();
 
@@ -153,14 +154,17 @@ describe("useTranslation tests", () => {
 
     const {
       result: [t],
+      owner,
     } = renderHook(useTranslation, {
       initialProps: [{ ns }],
     });
 
     const test = vi.fn();
-    createEffect(() => {
-      t("button");
-      test();
+    runWithOwner(owner, () => {
+      createEffect(() => {
+        t("button");
+        test();
+      });
     });
     test.mockClear();
 
