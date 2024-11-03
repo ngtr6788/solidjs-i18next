@@ -1,8 +1,10 @@
 import type { Callback, i18n, Namespace, TFunction } from "i18next";
 import i18next from "i18next";
 import {
+  type Accessor,
   createEffect,
   createResource,
+  createSignal,
   onCleanup,
   untrack,
   useContext,
@@ -22,12 +24,12 @@ function hasLoadedNamespace(
   }
 }
 
-function loadLanguages(
+async function loadLanguages(
   i18n: i18n,
   lng: string | readonly string[],
   namespaces: string | readonly string[],
-  callback: Callback,
-) {
+  callback?: Callback,
+): Promise<void> {
   const namespacesArray =
     typeof namespaces === "string" ? [namespaces] : namespaces;
 
@@ -41,15 +43,15 @@ function loadLanguages(
     }
   });
 
-  i18n.loadLanguages(lng, callback);
+  await i18n.loadLanguages(lng, callback);
 }
 
-function loadNamespaces(
+async function loadNamespaces(
   i18n: i18n,
   namespaces: string | readonly string[],
-  callback: Callback,
-) {
-  i18n.loadNamespaces(namespaces, callback);
+  callback?: Callback,
+): Promise<void> {
+  await i18n.loadNamespaces(namespaces, callback);
 }
 
 export interface UseTranslationOptions {
@@ -62,8 +64,10 @@ export interface UseTranslationOptions {
 
 export function useTranslation(
   options: UseTranslationOptions = {},
-): [TFunction, i18n] {
+): [TFunction, i18n, Accessor<boolean>] {
   const i18nContext = useContext(I18nContext);
+
+  const [dirty, setDirty] = createSignal(true);
 
   const i18n = options.i18n || i18nContext?.i18n || i18next;
 
@@ -84,29 +88,31 @@ export function useTranslation(
     return i18n.getFixedT(lng() || null, namespaces(), keyPrefix());
   };
 
-  const ready = () =>
-    (i18n.isInitialized || i18n.initializedStoreOnce) &&
-    namespaces().every((ns) =>
-      hasLoadedNamespace(i18n, ns, lng() || undefined),
+  const ready = () => {
+    dirty();
+    return (
+      (Boolean(i18n.isInitialized) || Boolean(i18n.initializedStoreOnce)) &&
+      namespaces().every((ns) =>
+        hasLoadedNamespace(i18n, ns, lng() || undefined),
+      )
     );
+  };
 
-  const loadLanguageNamespaces = (callback: Callback) => {
+  const loadLanguageNamespaces = async (callback?: Callback) => {
     const language = lng();
     if (language) {
-      loadLanguages(i18n, language, namespaces(), callback);
+      await loadLanguages(i18n, language, namespaces(), callback);
     } else {
-      loadNamespaces(i18n, namespaces(), callback);
+      await loadNamespaces(i18n, namespaces(), callback);
     }
   };
 
   const loadLngNsT = async (): Promise<ReturnType<typeof getT>> => {
     if (!ready() && untrack(useSuspense)) {
-      return await new Promise((resolve) =>
-        loadLanguageNamespaces(() => resolve(getT())),
-      );
-    } else {
-      return getT();
+      await loadLanguageNamespaces();
+      setDirty((d) => !d);
     }
+    return getT();
   };
 
   const [translate, { mutate: setTranslate, refetch }] = createResource(
@@ -119,7 +125,10 @@ export function useTranslation(
       if (untrack(useSuspense)) {
         refetch();
       } else {
-        loadLanguageNamespaces(() => setTranslate(() => getT()));
+        loadLanguageNamespaces().then(() => {
+          setDirty((d) => !d);
+          setTranslate(() => getT());
+        });
       }
     }
   });
@@ -169,5 +178,5 @@ export function useTranslation(
   // @ts-expect-error Property '$TFunctionBrand' is missing in type... TODO: Deal with this
   const t: TFunction = (...args) => translate()(...args);
 
-  return [t, i18n];
+  return [t, i18n, ready];
 }

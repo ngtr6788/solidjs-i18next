@@ -1,7 +1,7 @@
 import { type Meta } from "@storybook/html";
 import i18next from "i18next";
 import resourcesToBackend from "i18next-resources-to-backend";
-import { createEffect, Show, Suspense } from "solid-js";
+import { Show, Suspense } from "solid-js";
 
 import { I18NextProvider, useTranslation } from "../src";
 
@@ -38,12 +38,22 @@ export const UsingSuspense = {
   render: () => {
     const [t, , ready] = useTranslation({ useSuspense: true });
 
-    createEffect(() => {
-      console.log(ready());
-    });
-
     // Expected behaviour: Loading... should appear because useSuspense is true
-    return <Suspense fallback={"Loading..."}>{t("test-string")}</Suspense>;
+    return (
+      <>
+        <p>t is ready: {String(ready())}</p>
+        <p>
+          {/* This shows test-string instead of Loading... because useSuspense is false */}
+          <Suspense fallback={"Loading..."}>{t("test-string")}</Suspense>
+        </p>
+        <p>
+          {/* Because useSuspense is false, we will have to use ready to check if things are ready */}
+          <Show when={ready()} fallback={"Loading..."}>
+            {t("test-string")}
+          </Show>
+        </p>
+      </>
+    );
   },
 };
 
@@ -53,6 +63,7 @@ export const NotUsingSuspense = {
 
     return (
       <>
+        <p>t is ready: {String(ready())}</p>
         <p>
           {/* This shows test-string instead of Loading... because useSuspense is false */}
           <Suspense fallback={"Loading..."}>{t("test-string")}</Suspense>
