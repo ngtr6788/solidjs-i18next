@@ -2,10 +2,16 @@ import { type Meta } from "@storybook/html";
 import i18next from "i18next";
 import { createSignal, type JSX, type JSXElement } from "solid-js";
 
-import { I18NextProvider, Trans } from "../src";
+import { I18NextProvider, Trans, useTranslation } from "../src";
 
 const i18nInit = {
   resources: {
+    fr: {
+      translation: {
+        "click-here-to-subscribe":
+          "In the language of Moliere, click <0>here</0> to <1>subscribe</1>",
+      },
+    },
     en: {
       translation: {
         "click-here-to-subscribe": "Click <0>here</0> to <1>subscribe</1>",
@@ -23,6 +29,18 @@ const i18nInit = {
         actors_female_zero: "No actresses",
         actors_female_one: "{{one}} actress",
         actors_female_other: "{{count}} actresses",
+        "array-join": ["Item 1", "Item 2", "Item 3"],
+        items_ordinal_one: "{{count}}st item",
+        items_ordinal_two: "{{count}}nd item",
+        items_ordinal_few: "{{count}}rd item",
+        items_ordinal_other: "{{count}}th item",
+      },
+      silly: {
+        "click-here-to-subscribe": "<0>SMASH LIKE</0> and <1>SUBSCRIBE</1>",
+        "to-learn-more-click-here":
+          "Click <CustomLink>here</CustomLink> to learn <italics>a bunch</italics> more",
+        "bold-italics-underline":
+          "Counting thing <1>1</1>, counting thing <3>three</3>, counting six <6>six</6>",
       },
     },
   },
@@ -311,6 +329,82 @@ export const UseDefaultValue = {
       <>
         <button on:click={toggleDefault}>Toggle default value</button>
         <Trans i18nKey="non-existant-key" defaultValue={defaultValue()} />
+      </>
+    );
+  },
+};
+
+export const ChangeNamespace = {
+  render: () => {
+    const [ns, setNs] = createSignal("");
+
+    const toggleNamespace = () => {
+      setNs((value) => (value === "" ? "silly" : ""));
+    };
+
+    return (
+      <>
+        <button on:click={toggleNamespace}>Toggle default value</button>
+        <Trans
+          i18nKey="click-here-to-subscribe"
+          ns={ns()}
+          components={[<a href="" />, <b />]}
+        />
+      </>
+    );
+  },
+};
+
+export const ChangeLanguageWithI18n = {
+  render: () => {
+    const [t, i18n] = useTranslation();
+
+    let lng = "en";
+    const handleClick = () => {
+      lng = lng === "en" ? "fr" : "en";
+      i18n.changeLanguage(lng);
+    };
+
+    return (
+      <>
+        <button on:click={handleClick}>Change language</button>
+        <p>
+          <Trans
+            t={t}
+            i18nKey="click-here-to-subscribe"
+            components={[<a href="" />, <b />]}
+          />
+        </p>
+      </>
+    ) as Element;
+  },
+};
+
+export const UseTOptionsExamples = {
+  render: () => {
+    return (
+      <>
+        <p>
+          <Trans
+            i18nKey="array-join"
+            tOptions={{
+              returnObjects: true,
+              joinArrays: ", ",
+            }}
+          />
+        </p>
+        <p>
+          <Trans i18nKey="items" count={1} tOptions={{ ordinal: true }} />
+        </p>
+        <p>
+          <Trans i18nKey="items" count={2} tOptions={{ ordinal: true }} />
+        </p>
+        <p>
+          <Trans i18nKey="items" count={3} tOptions={{ ordinal: true }} />
+        </p>
+        <p>
+          <Trans i18nKey="items" count={4} tOptions={{ ordinal: true }} />
+        </p>
       </>
     );
   },

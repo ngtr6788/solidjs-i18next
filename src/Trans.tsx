@@ -1,9 +1,11 @@
 import { type IDom, parse } from "html-parse-string";
-import i18next, { type i18n, type TFunction } from "i18next";
+import type { i18n, TFunction, TOptions, TOptionsBase } from "i18next";
+import i18next from "i18next";
 import {
   children,
   type Component,
   type JSXElement,
+  mergeProps,
   Show,
   untrack,
   useContext,
@@ -15,13 +17,20 @@ type TransChild = JSXElement | Record<string, unknown>;
 
 interface TransProps {
   i18nKey?: string;
+
+  /* t function options */
   count?: number;
   context?: string;
-  values?: Record<string, unknown>;
   ns?: string | string[];
   defaultValue?: string;
+  tOptions?: TOptionsBase;
+  values?: Record<string, unknown>;
+
+  /* Use the JSX and things */
   components?: readonly JSXElement[] | Record<string, JSXElement>;
   children?: TransChild | readonly TransChild[];
+
+  /* Use custom t or i18n */
   t?: TFunction;
   i18n?: i18n;
 }
@@ -110,23 +119,25 @@ export const Trans: Component<TransProps> = (props) => {
 
   const values = () => {
     const defaultVariables = i18n().options?.interpolation?.defaultVariables;
-    if (defaultVariables) {
-      return props.values && Object.keys(props.values).length > 0
-        ? { ...props.values, ...defaultVariables }
-        : { ...defaultVariables };
-    } else {
-      return props.values;
-    }
+    const combinedValues = mergeProps(props.values, defaultVariables);
+    return combinedValues;
   };
 
-  const tOpts = () => {
-    return {
-      context: props.context,
-      count: props.count,
-      ...values(),
-      defaultValue: defaultValue(),
-      ns: namespaces(),
-    };
+  const tOpts = (): TOptions => {
+    const combinedTOpts = mergeProps(
+      props.tOptions,
+      {
+        context: props.context || props.tOptions?.context,
+        count: props.count,
+      },
+      values(),
+      {
+        defaultValue: defaultValue(),
+        ns: namespaces(),
+      },
+    );
+
+    return combinedTOpts;
   };
 
   const translation = () => {
