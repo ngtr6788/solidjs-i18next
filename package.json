@@ -24,6 +24,7 @@
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "eslint-plugin-solid": "^0.14.3",
     "globals": "^15.11.0",
+    "i18next-resources-to-backend": "^1.2.1",
     "jsdom": "^25.0.1",
     "prettier": "3.3.3",
     "storybook": "^8.4.1",
