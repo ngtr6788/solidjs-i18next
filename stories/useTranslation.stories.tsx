@@ -1,6 +1,6 @@
 import { type Meta, type StoryObj } from "@storybook/html";
 import i18next from "i18next";
-import { createSignal } from "solid-js";
+import { createEffect, createSignal } from "solid-js";
 
 import { I18NextProvider, useTranslation } from "../src";
 
@@ -133,6 +133,58 @@ export const UseTranslationNamespaceProp: StoryObj = {
       <>
         <button on:click={handleClick}>Change namespace</button>
         <p>{t("button")}</p>
+      </>
+    ) as Element;
+  },
+};
+
+export const UseTranslationNamespaceArrayProp = {
+  render: () => {
+    const translation1 = ["translation", "informal"];
+    const translation2 = [...translation1];
+    const translation3 = [...translation1];
+    const informal1 = ["informal", "translation"];
+    const informal2 = [...informal1];
+    const informal3 = [...informal1];
+
+    const namespaces = [
+      translation1,
+      translation2,
+      translation3,
+      informal1,
+      informal2,
+      informal3,
+    ];
+
+    const [tick, setTick] = createSignal(0);
+    const [hasUpdated, setHasUpdated] = createSignal(false);
+
+    const [t] = useTranslation({
+      get ns() {
+        return namespaces[tick()];
+      },
+    });
+
+    const handleClick = () => {
+      setTick((n) => (n + 1) % namespaces.length);
+    };
+
+    createEffect(() => {
+      tick();
+      setHasUpdated(false);
+    });
+
+    createEffect(() => {
+      t("button");
+      setHasUpdated(true);
+    });
+
+    return (
+      <>
+        <button on:click={handleClick}>Change namespace</button>
+        <p>{t("button")}</p>
+        <p>Tick: {tick()}</p>
+        <p>Has updated: {hasUpdated() ? "true" : "false"}</p>
       </>
     ) as Element;
   },
