@@ -1,5 +1,6 @@
 {
   "name": "solidjs-i18next",
+  "type": "module",
   "version": "0.0.0",
   "description": "",
   "scripts": {
@@ -8,8 +9,7 @@
     "lint:fix": "eslint --fix .",
     "format": "prettier . --check",
     "format:fix": "prettier . --write",
-    "test:dev": "vitest watch",
-    "test:prod": "vitest run"
+    "test": "vitest"
   },
   "license": "MIT",
   "devDependencies": {

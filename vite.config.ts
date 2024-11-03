@@ -6,4 +6,14 @@ export default defineConfig({
   build: {
     target: "esnext",
   },
+  test: {
+    server: {
+      deps: {
+        inline: ["html-parse-string"],
+      },
+    },
+    clearMocks: true,
+    mockReset: true,
+    restoreMocks: true,
+  },
 });
