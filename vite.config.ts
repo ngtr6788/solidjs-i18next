@@ -7,6 +7,7 @@ export default defineConfig({
     target: "esnext",
   },
   test: {
+    setupFiles: ["./tests/vitest.setup.ts"],
     server: {
       deps: {
         inline: ["html-parse-string"],
