@@ -2,7 +2,14 @@ import { renderHook } from "@solidjs/testing-library";
 import i18next from "i18next";
 import { createEffect, createSignal, runWithOwner } from "solid-js";
 import { createStore, produce } from "solid-js/store";
-import { describe, expect, onTestFinished, test, vi } from "vitest";
+import {
+  describe,
+  expect,
+  onTestFailed,
+  onTestFinished,
+  test,
+  vi,
+} from "vitest";
 
 import { useTranslation } from "../src";
 
@@ -39,16 +46,31 @@ i18next.init(i18nextInit);
 describe("useTranslation tests", () => {
   test("i18n.language change", () => {
     const {
-      result: [t, i18n],
+      result: [t, i18n, ready],
+      owner,
     } = renderHook(useTranslation);
-
-    expect(t("button")).toEqual("Button in english");
-    i18n.changeLanguage("fr");
-    expect(t("button")).toEqual("Button in french");
 
     onTestFinished(() => {
       i18n.changeLanguage("en");
     });
+
+    onTestFailed(() => {
+      i18n.changeLanguage("en");
+    });
+
+    const test = vi.fn();
+    runWithOwner(owner, () => {
+      createEffect(() => {
+        ready();
+        test();
+      });
+    });
+    test.mockClear();
+
+    expect(t("button")).toEqual("Button in english");
+    i18n.changeLanguage("fr");
+    expect(t("button")).toEqual("Button in french");
+    expect(test).not.toBeCalled();
   });
 
   test("language option change", () => {
