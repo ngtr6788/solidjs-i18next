@@ -167,7 +167,8 @@ export const Trans: Component<TransProps> = (props) => {
       });
     }
 
-    return { ...data, ...tOpts() };
+    const combinedOpts = mergeProps(data, tOpts());
+    return combinedOpts;
   };
 
   const interpolate = (content: string | undefined | null) => {
