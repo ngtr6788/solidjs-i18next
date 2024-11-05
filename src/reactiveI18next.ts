@@ -47,6 +47,7 @@ class ReactiveI18n implements i18n {
         produce((i18nStore) => {
           i18nStore.language = this.#i18n.language;
           i18nStore.languages = this.#i18n.languages;
+          i18nStore.resolvedLanguage = this.#i18n.resolvedLanguage;
           i18nStore.isInitialized = this.#i18n.isInitialized;
           i18nStore.isInitializing = this.#i18n.isInitializing;
           i18nStore.initializedStoreOnce = this.#i18n.initializedStoreOnce;
