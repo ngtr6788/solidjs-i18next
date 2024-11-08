@@ -20,6 +20,7 @@ type InterimKeys =
   | "loadLanguages"
   | "loadNamespaces"
   | "getFixedT"
+  | "t"
   | "on"
   | "off";
 
@@ -102,7 +103,6 @@ export const createReactiveI18n = (
     callback?: Callback,
   ): Promise<TFunction> => {
     const tPromise = i18n.changeLanguage(lng, callback);
-    i18nDirty();
     const t = await tPromise;
     i18nDirty();
     return t;
@@ -130,7 +130,6 @@ export const createReactiveI18n = (
 
   const loadLanguages = async (...args: Parameters<i18n["loadLanguages"]>) => {
     const promise = i18n.loadLanguages(...args);
-    i18nDirty();
     await promise;
     i18nDirty();
   };
@@ -139,9 +138,29 @@ export const createReactiveI18n = (
     ...args: Parameters<i18n["loadNamespaces"]>
   ) => {
     const promise = i18n.loadNamespaces(...args);
-    i18nDirty();
     await promise;
     i18nDirty();
+  };
+
+  const tCache = new ReactiveMap<string, string>();
+
+  createEffect(() => {
+    i18nTrack();
+    tCache.keys().forEach((key) => {
+      const args = JSON.parse(key);
+      tCache.set(key, i18n.t(...args));
+    });
+  });
+
+  const t = (...args: Parameters<i18n["t"]>) => {
+    const key = JSON.stringify(args);
+    const result = tCache.get(key);
+    if (result === undefined) {
+      const originalResult = i18n.t(...args);
+      tCache.set(key, originalResult);
+      return originalResult;
+    }
+    return result;
   };
 
   const getFixedT = (...args: Parameters<i18n["getFixedT"]>) => {
@@ -192,6 +211,8 @@ export const createReactiveI18n = (
     loadLanguages,
     loadNamespaces,
     getFixedT,
+    // @ts-expect-error TFunctionBrand issue
+    t,
     on,
     off,
   };

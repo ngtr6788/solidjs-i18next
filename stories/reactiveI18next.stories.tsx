@@ -1,6 +1,6 @@
 import { type Meta } from "@storybook/html";
 import i18next from "i18next";
-import { batch, createEffect } from "solid-js";
+import { createEffect, createSignal } from "solid-js";
 
 import { I18NextProvider } from "../src";
 import { createReactiveI18n } from "../src/reactiveI18next";
@@ -16,6 +16,9 @@ const i18nextInit = {
       },
       informal: {
         button: "Clicky thing in english",
+        special: {
+          button: "Epic clicky thing in english",
+        },
       },
     },
     fr: {
@@ -27,6 +30,9 @@ const i18nextInit = {
       },
       informal: {
         button: "Clicky thing in french",
+        special: {
+          button: "Epic clicky thing in french",
+        },
       },
     },
   },
@@ -102,54 +108,98 @@ export const LanguagesReactiveOnChangeLanguage = {
   },
 };
 
-export const ResourcesReactiveOnAddResources = {
+export const ChangeLanguageChangeT = {
   render: () => {
     const i18n = createReactiveI18n();
 
-    const handleAddResource = () => {
-      batch(() => {
-        i18n.addResource(
-          "en",
-          "very-informal",
-          "special.button",
-          "Super epic button in English",
-        );
-        i18n.addResource(
-          "fr",
-          "very-informal",
-          "special.button",
-          "Super epic button in French",
-        );
-      });
+    let lng = "en";
+    const handleChangeLng = () => {
+      lng = lng === "en" ? "fr" : "en";
+      i18n.changeLanguage(lng);
     };
 
-    const handleRemoveResource = () => {
-      batch(() => {
-        i18n.removeResourceBundle("en", "very-informal");
-        i18n.removeResourceBundle("fr", "very-informal");
-      });
+    const keysList = ["button", "special.button", "nonexistent"];
+    const [key, setKey] = createSignal(0);
+
+    const handleChangeKey = () => {
+      setKey((key) => (key + 1) % keysList.length);
     };
 
-    const enBundle = () =>
-      JSON.stringify(i18n.getResourceBundle("en", "very-informal"));
-    const hasEnBundle = () => i18n.hasResourceBundle("en", "very-informal");
-
-    const frBundle = () =>
-      JSON.stringify(i18n.getResourceBundle("fr", "very-informal"));
-    const hasFrBundle = () => i18n.hasResourceBundle("en", "very-informal");
+    const handleNamespaces = () => {
+      i18n.loadNamespaces(["translation", "informal"]);
+    };
 
     createEffect(() => {
-      console.log(enBundle());
-      console.log(frBundle());
+      console.log(i18n.t(keysList[key()]));
+    });
+    createEffect(() => {
+      console.log(i18n.t(keysList[key()], { ns: "informal" }));
+    });
+    createEffect(() => {
+      console.log(i18n.t(keysList[key()], { lng: "fr" }));
     });
 
     return (
       <>
-        <button on:click={handleAddResource}>Add resource</button>
-        <button on:click={handleRemoveResource}>Remove resource</button>
-        <p>{hasEnBundle() ? enBundle() : "No resource bundle for English"}</p>
-        <p>{hasFrBundle() ? frBundle() : "No resource bundle for French"}</p>
+        <button on:click={handleChangeLng}>Change language</button>
+        <button on:click={handleChangeKey}>Change key</button>
+        <button on:click={handleNamespaces}>Load namespaces</button>
+        <p>{i18n.t(keysList[key()])}</p>
+        <p>{i18n.t(keysList[key()], { ns: "informal" })}</p>
+        <p>{i18n.t(keysList[key()], { lng: "fr" })}</p>
       </>
     ) as Element;
   },
 };
+
+// export const ResourcesReactiveOnAddResources = {
+//   render: () => {
+//     const i18n = createReactiveI18n();
+
+//     const handleAddResource = () => {
+//       batch(() => {
+//         i18n.addResource(
+//           "en",
+//           "very-informal",
+//           "special.button",
+//           "Super epic button in English",
+//         );
+//         i18n.addResource(
+//           "fr",
+//           "very-informal",
+//           "special.button",
+//           "Super epic button in French",
+//         );
+//       });
+//     };
+
+//     const handleRemoveResource = () => {
+//       batch(() => {
+//         i18n.removeResourceBundle("en", "very-informal");
+//         i18n.removeResourceBundle("fr", "very-informal");
+//       });
+//     };
+
+//     const enBundle = () =>
+//       JSON.stringify(i18n.getResourceBundle("en", "very-informal"));
+//     const hasEnBundle = () => i18n.hasResourceBundle("en", "very-informal");
+
+//     const frBundle = () =>
+//       JSON.stringify(i18n.getResourceBundle("fr", "very-informal"));
+//     const hasFrBundle = () => i18n.hasResourceBundle("en", "very-informal");
+
+//     createEffect(() => {
+//       console.log(enBundle());
+//       console.log(frBundle());
+//     });
+
+//     return (
+//       <>
+//         <button on:click={handleAddResource}>Add resource</button>
+//         <button on:click={handleRemoveResource}>Remove resource</button>
+//         <p>{hasEnBundle() ? enBundle() : "No resource bundle for English"}</p>
+//         <p>{hasFrBundle() ? frBundle() : "No resource bundle for French"}</p>
+//       </>
+//     ) as Element;
+//   },
+// };
