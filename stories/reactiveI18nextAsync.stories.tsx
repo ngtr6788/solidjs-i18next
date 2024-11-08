@@ -59,6 +59,10 @@ export const ReactiveInitializeAttributes = {
         <p>i18n.isInitializing: {String(i18n.isInitializing)}</p>
         <p>i18n.isInitialized: {String(i18n.isInitialized)}</p>
         <p>
+          i18n.hasLoadedNamespace("translation"):{" "}
+          {String(i18n.hasLoadedNamespace(["translation"]))}
+        </p>
+        <p>
           <Suspense fallback={"Loading..."}>{t("test-string")}</Suspense>
         </p>
       </>

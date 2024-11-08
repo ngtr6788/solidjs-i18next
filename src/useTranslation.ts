@@ -2,7 +2,9 @@ import type { Callback, i18n, Namespace, TFunction } from "i18next";
 import i18next from "i18next";
 import {
   type Accessor,
+  batch,
   createEffect,
+  createMemo,
   createResource,
   createSignal,
   onCleanup,
@@ -18,7 +20,7 @@ function hasLoadedNamespace(
   lng: string | readonly string[] | undefined,
 ) {
   if (i18n.languages && i18n.languages.length) {
-    return i18n.hasLoadedNamespace(namespace, { lng });
+    return batch(() => i18n.hasLoadedNamespace(namespace, { lng }));
   } else {
     return true;
   }
@@ -43,7 +45,7 @@ async function loadLanguages(
     }
   });
 
-  await i18n.loadLanguages(lng, callback);
+  await batch(() => i18n.loadLanguages(lng, callback));
 }
 
 async function loadNamespaces(
@@ -51,7 +53,7 @@ async function loadNamespaces(
   namespaces: string | readonly string[],
   callback?: Callback,
 ): Promise<void> {
-  await i18n.loadNamespaces(namespaces, callback);
+  await batch(() => i18n.loadNamespaces(namespaces, callback));
 }
 
 export interface UseTranslationOptions {
@@ -88,7 +90,7 @@ export function useTranslation(
     return i18n.getFixedT(lng() || null, namespaces(), keyPrefix());
   };
 
-  const ready = () => {
+  const ready = createMemo(() => {
     dirty();
     return (
       (Boolean(i18n.isInitialized) || Boolean(i18n.initializedStoreOnce)) &&
@@ -96,7 +98,7 @@ export function useTranslation(
         hasLoadedNamespace(i18n, ns, lng() || undefined),
       )
     );
-  };
+  });
 
   const loadLanguageNamespaces = async (callback?: Callback) => {
     const language = lng();

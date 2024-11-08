@@ -1,6 +1,6 @@
-// import { signalify } from "classy-solid";
+import { ReactiveMap } from "@solid-primitives/map";
 import i18next, { type Callback, type i18n, type TFunction } from "i18next";
-import { createMemo, createSignal, useContext } from "solid-js";
+import { createEffect, createMemo, createSignal, useContext } from "solid-js";
 
 import { I18nContext } from "./I18NextProvider";
 
@@ -108,10 +108,24 @@ export const createReactiveI18n = (
     return t;
   };
 
+  const hasLoadedNamespaceCache = new ReactiveMap<string, boolean>();
+
+  createEffect(() => {
+    i18nTrack();
+    hasLoadedNamespaceCache.clear();
+  });
+
   const hasLoadedNamespace = (
     ...args: Parameters<i18n["hasLoadedNamespace"]>
-  ) => {
-    return i18n.hasLoadedNamespace(...args);
+  ): boolean => {
+    const key = JSON.stringify(args);
+    const result = hasLoadedNamespaceCache.get(key);
+    if (result === undefined) {
+      const newResult = i18n.hasLoadedNamespace(...args);
+      hasLoadedNamespaceCache.set(key, newResult);
+      return newResult;
+    }
+    return result;
   };
 
   const loadLanguages = async (...args: Parameters<i18n["loadLanguages"]>) => {

@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@solid-primitives/map':
+        specifier: ^0.4.13
+        version: 0.4.13(solid-js@1.9.2)
       '@solid-primitives/trigger':
         specifier: ^1.1.0
         version: 1.1.0(solid-js@1.9.2)
@@ -559,6 +562,11 @@ packages:
     resolution: {integrity: sha512-1q+mykKE3Vot1kaFJIDoUFv5TuW+QQVaf2FmTT9krg86pQrGStOSJJ0Zil7CFagyxDuouTepzt5Y5TVzyajOdQ==}
     cpu: [x64]
     os: [win32]
+
+  '@solid-primitives/map@0.4.13':
+    resolution: {integrity: sha512-B1zyFbsiTQvqPr+cuPCXO72sRuczG9Swncqk5P74NCGw1VE8qa/Ry9GlfI1e/VdeQYHjan+XkbE3rO2GW/qKew==}
+    peerDependencies:
+      solid-js: ^1.6.12
 
   '@solid-primitives/trigger@1.1.0':
     resolution: {integrity: sha512-00BbAiXV66WwjHuKZc3wr0+GLb9C24mMUmi3JdTpNFgHBbrQGrIHubmZDg36c5/7wH+E0GQtOOanwQS063PO+A==}
@@ -2308,6 +2316,11 @@ snapshots:
 
   '@rollup/rollup-win32-x64-msvc@4.9.5':
     optional: true
+
+  '@solid-primitives/map@0.4.13(solid-js@1.9.2)':
+    dependencies:
+      '@solid-primitives/trigger': 1.1.0(solid-js@1.9.2)
+      solid-js: 1.9.2
 
   '@solid-primitives/trigger@1.1.0(solid-js@1.9.2)':
     dependencies:
