@@ -112,7 +112,10 @@ export const createReactiveI18n = (
 
   createEffect(() => {
     i18nTrack();
-    hasLoadedNamespaceCache.clear();
+    hasLoadedNamespaceCache.keys().forEach((key) => {
+      const args = JSON.parse(key) as Parameters<i18n["hasLoadedNamespace"]>;
+      hasLoadedNamespaceCache.set(key, i18n.hasLoadedNamespace(...args));
+    });
   });
 
   const hasLoadedNamespace = (
@@ -147,7 +150,7 @@ export const createReactiveI18n = (
   createEffect(() => {
     i18nTrack();
     tCache.keys().forEach((key) => {
-      const args = JSON.parse(key);
+      const args = JSON.parse(key) as Parameters<i18n["t"]>;
       tCache.set(key, i18n.t(...args));
     });
   });
