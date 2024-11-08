@@ -1,5 +1,5 @@
 import { type Meta } from "@storybook/html";
-import i18next from "i18next";
+import i18next, { type TFunction } from "i18next";
 import { createEffect, createSignal } from "solid-js";
 
 import { I18NextProvider } from "../src";
@@ -149,6 +149,54 @@ export const ChangeLanguageChangeT = {
         <p>{i18n.t(keysList[key()], { lng: "fr" })}</p>
       </>
     ) as Element;
+  },
+};
+
+export const GetFixedTChanges = {
+  render: () => {
+    const i18n = createReactiveI18n();
+
+    const t1 = (...args: Parameters<TFunction>) => {
+      const t = i18n.getFixedT(null, null, undefined);
+      return t(...args);
+    };
+
+    const t2 = (...args: Parameters<TFunction>) => {
+      const t = i18n.getFixedT(null, null, "special");
+      return t(...args);
+    };
+
+    const t3 = (...args: Parameters<TFunction>) => {
+      const t = i18n.getFixedT(null, "informal", undefined);
+      return t(...args);
+    };
+
+    const t4 = (...args: Parameters<TFunction>) => {
+      const t = i18n.getFixedT("fr", null, undefined);
+      return t(...args);
+    };
+
+    let lng = "en";
+    const handleChangeLng = () => {
+      lng = lng === "en" ? "fr" : "en";
+      i18n.changeLanguage(lng);
+    };
+
+    const [ns, setNs] = createSignal("translation");
+    const handleChangeNs = () => {
+      setNs(ns() === "translation" ? "informal" : "translation");
+    };
+
+    return (
+      <>
+        <button on:click={handleChangeLng}>Change language</button>
+        <button on:click={handleChangeNs}>Change namespace</button>
+        <p>{t1("button", { ns: ns() })}</p>
+        <p>{t2("button", { ns: ns() })}</p>
+        <p>{t3("button", { ns: ns() })}</p>
+        <p>{t4("button", { ns: ns() })}</p>
+      </>
+    );
   },
 };
 

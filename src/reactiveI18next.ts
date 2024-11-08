@@ -24,6 +24,33 @@ type InterimKeys =
   | "on"
   | "off";
 
+/**
+ * Remaining attributes and methods
+ * - [ ] init
+ * - [ ] loadResources
+ * - [ ] use
+ * - [ ] exists
+ * - [ ] getDataByLanguage
+ * - [x] getFixedT
+ * - [ ] reloadResources
+ * - [ ] setDefaultNamespace
+ * - [ ] dir
+ * - [ ] format
+ * - [ ] createInstance
+ * - [ ] cloneInstance
+ * - [ ] getResource
+ * - [ ] addResource
+ * - [ ] addResources
+ * - [ ] addResourceBundle
+ * - [ ] hasResourceBundle
+ * - [ ] removeResourceBundle
+ * - [ ] emit
+ */
+
+/**
+ * TODOs: Get a better "key" from arguments than JSON.stringify
+ */
+
 export const createReactiveI18n = (
   propI18n?: i18n,
 ): Pick<i18n, InterimKeys> => {
@@ -166,8 +193,28 @@ export const createReactiveI18n = (
     return result;
   };
 
+  const getFixedTCache = new ReactiveMap<
+    string,
+    ReturnType<i18n["getFixedT"]>
+  >();
+
+  createEffect(() => {
+    i18nTrack();
+    getFixedTCache.keys().forEach((key) => {
+      const args = JSON.parse(key) as Parameters<i18n["getFixedT"]>;
+      getFixedTCache.set(key, i18n.getFixedT(...args));
+    });
+  });
+
   const getFixedT = (...args: Parameters<i18n["getFixedT"]>) => {
-    return i18n.getFixedT(...args);
+    const key = JSON.stringify(args);
+    const result = getFixedTCache.get(key);
+    if (result === undefined) {
+      const originalResult = i18n.getFixedT(...args);
+      getFixedTCache.set(key, originalResult);
+      return originalResult;
+    }
+    return result;
   };
 
   const on = (...args: Parameters<i18n["on"]>) => {
