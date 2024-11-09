@@ -15,16 +15,22 @@ type InterimKeys =
   | "isInitializing"
   | "initializedStoreOnce"
   | "initializedLanguageOnce"
+  | "format"
   | "changeLanguage"
+  | "setDefaultNamespace"
   | "hasLoadedNamespace"
   | "loadLanguages"
   | "loadNamespaces"
   | "exists"
+  | "dir"
   | "getFixedT"
   | "t"
   | "on"
   | "off"
   | "emit"
+  | "loadResources"
+  | "reloadResources"
+  | "getDataByLanguage"
   | "getResource"
   | "addResource"
   | "addResources"
@@ -36,15 +42,15 @@ type InterimKeys =
 /**
  * Remaining attributes and methods
  * - [ ] init
- * - [ ] loadResources
+ * - [~] loadResources
  * - [ ] use
  * - [x] exists
- * - [ ] getDataByLanguage
+ * - [~] getDataByLanguage
  * - [x] getFixedT
- * - [ ] reloadResources
- * - [ ] setDefaultNamespace
- * - [ ] dir
- * - [ ] format
+ * - [~] reloadResources
+ * - [~] setDefaultNamespace
+ * - [~] dir
+ * - [~] format
  * - [ ] createInstance
  * - [ ] cloneInstance
  * - [x] getResource
@@ -135,6 +141,11 @@ export const createReactiveI18n = (
     return i18n.initializedLanguageOnce;
   });
 
+  const format = createMemo(() => {
+    i18nTrack();
+    return i18n.format;
+  });
+
   const createReactiveMemoizedMethod = <P extends unknown[], R>(
     fn: (...args: P) => R,
   ): ((...args: P) => R) => {
@@ -186,25 +197,46 @@ export const createReactiveI18n = (
     return t;
   };
 
+  const setDefaultNamespace = (
+    ...args: Parameters<i18n["setDefaultNamespace"]>
+  ) => {
+    i18n.setDefaultNamespace(...args);
+    i18nDirty();
+  };
+
   const loadLanguages = async (...args: Parameters<i18n["loadLanguages"]>) => {
-    const promise = i18n.loadLanguages(...args);
-    await promise;
+    await i18n.loadLanguages(...args);
     i18nDirty();
   };
 
   const loadNamespaces = async (
     ...args: Parameters<i18n["loadNamespaces"]>
   ) => {
-    const promise = i18n.loadNamespaces(...args);
-    await promise;
+    await i18n.loadNamespaces(...args);
     i18nDirty();
   };
+
+  const loadResources = (...args: Parameters<i18n["loadResources"]>) => {
+    i18n.loadResources(...args);
+    i18nDirty();
+  };
+
+  const reloadResources = async (
+    ...args: Parameters<i18n["reloadResources"]>
+  ) => {
+    await i18n.reloadResources(...args);
+    i18nDirty();
+  };
+
+  const getDataByLanguage = createReactiveMethod(i18n.getDataByLanguage);
 
   const exists = createReactiveMemoizedMethod(i18n.exists);
 
   const hasLoadedNamespace = createReactiveMemoizedMethod(
     i18n.hasLoadedNamespace,
   );
+
+  const dir = createReactiveMethod(i18n.dir);
 
   const t = createReactiveMemoizedMethod(i18n.t);
 
@@ -287,16 +319,24 @@ export const createReactiveI18n = (
     get initializedLanguageOnce() {
       return initializedLanguageOnce();
     },
+    get format() {
+      return format();
+    },
     changeLanguage,
+    setDefaultNamespace,
     hasLoadedNamespace,
     loadLanguages,
     loadNamespaces,
+    getDataByLanguage,
+    dir,
     exists,
     getFixedT,
     t: t as i18n["t"],
     on,
     off,
     emit,
+    loadResources,
+    reloadResources: reloadResources as i18n["reloadResources"],
     getResource,
     addResource,
     addResources,

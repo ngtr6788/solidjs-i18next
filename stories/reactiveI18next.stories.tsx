@@ -35,6 +35,11 @@ const i18nextInit = {
         },
       },
     },
+    ar: {
+      translation: {
+        button: "Button in arabic",
+      },
+    },
   },
   fallbackLng: "en",
 };
@@ -301,6 +306,7 @@ export const ResourcesReactiveOnAddResources = {
         <button on:click={handleChangeLanguage}>Change language</button>
         <p>{hasEnBundle() ? enBundle() : "No resource bundle for English"}</p>
         <p>{hasFrBundle() ? frBundle() : "No resource bundle for French"}</p>
+        <p>{JSON.stringify(i18n.getDataByLanguage(lng()))}</p>
         <p>
           {JSON.stringify(i18n.getResource(lng(), "very-informal", "special"))}
         </p>
@@ -332,5 +338,27 @@ export const KeyExists = {
         </p>
       </>
     ) as Element;
+  },
+};
+
+export const Dir = {
+  render: () => {
+    const i18n = createReactiveI18n();
+
+    let lng = "en";
+    const handleChangeLng = () => {
+      lng = lng === "en" ? "ar" : "en";
+      i18n.changeLanguage(lng);
+    };
+
+    return (
+      <>
+        <button on:click={handleChangeLng}>Change language</button>
+        <p>Current lang: {i18n.resolvedLanguage}</p>
+        <p>i18n.dir("en") {i18n.dir("en")}</p>
+        <p>i18n.dir("ar") {i18n.dir("xaa")}</p>
+        <p>i18n.dir() {i18n.dir()}</p>
+      </>
+    );
   },
 };

@@ -1,7 +1,7 @@
 import { type Meta } from "@storybook/html";
 import i18next from "i18next";
 import resourcesToBackend from "i18next-resources-to-backend";
-import { createEffect, Suspense } from "solid-js";
+import { createEffect, createSignal, Suspense } from "solid-js";
 
 import { createReactiveI18n, I18NextProvider, useTranslation } from "../src";
 
@@ -64,6 +64,37 @@ export const ReactiveInitializeAttributes = {
         </p>
         <p>
           <Suspense fallback={"Loading..."}>{t("test-string")}</Suspense>
+        </p>
+      </>
+    );
+  },
+};
+
+export const ReloadResources = {
+  render: () => {
+    const i18n = createReactiveI18n();
+    const [loading, setLoading] = createSignal(false);
+
+    const handleLoad = async () => {
+      setLoading(true);
+      i18n.loadResources();
+      setLoading(false);
+    };
+
+    const handleReload = async () => {
+      setLoading(true);
+      await i18n.reloadResources("en");
+      setLoading(false);
+    };
+
+    return (
+      <>
+        <button onClick={handleLoad}>Load resources</button>
+        <button onClick={handleReload}>Reload resources</button>
+        <p>
+          {loading()
+            ? "Loading..."
+            : JSON.stringify(i18n.getDataByLanguage("en"))}
         </p>
       </>
     );
