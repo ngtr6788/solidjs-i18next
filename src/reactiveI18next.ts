@@ -19,18 +19,26 @@ type InterimKeys =
   | "hasLoadedNamespace"
   | "loadLanguages"
   | "loadNamespaces"
+  | "exists"
   | "getFixedT"
   | "t"
   | "on"
   | "off"
-  | "emit";
+  | "emit"
+  | "getResource"
+  | "addResource"
+  | "addResources"
+  | "addResourceBundle"
+  | "hasResourceBundle"
+  | "getResourceBundle"
+  | "removeResourceBundle";
 
 /**
  * Remaining attributes and methods
  * - [ ] init
  * - [ ] loadResources
  * - [ ] use
- * - [ ] exists
+ * - [~] exists
  * - [ ] getDataByLanguage
  * - [x] getFixedT
  * - [ ] reloadResources
@@ -39,12 +47,13 @@ type InterimKeys =
  * - [ ] format
  * - [ ] createInstance
  * - [ ] cloneInstance
- * - [ ] getResource
- * - [ ] addResource
- * - [ ] addResources
- * - [ ] addResourceBundle
- * - [ ] hasResourceBundle
- * - [ ] removeResourceBundle
+ * - [~] getResource
+ * - [~] addResource
+ * - [~] addResources
+ * - [~] addResourceBundle
+ * - [~] hasResourceBundle
+ * - [~] getResourceBundle
+ * - [~] removeResourceBundle
  * - [x] emit
  */
 
@@ -153,6 +162,20 @@ export const createReactiveI18n = (
     return func;
   };
 
+  // This method exists when the return value is not a primitive,
+  // so that we can actually see the changes to the array/object/etc.
+  const createReactiveMethod = <P extends unknown[], R>(
+    fn: (...args: P) => R,
+  ): ((...args: P) => R) => {
+    const func = (...args: P): R => {
+      i18nTrack();
+      const result = fn(...args);
+      return result;
+    };
+
+    return func;
+  };
+
   const changeLanguage = async (
     lng?: string,
     callback?: Callback,
@@ -177,6 +200,8 @@ export const createReactiveI18n = (
     i18nDirty();
   };
 
+  const exists = createReactiveMemoizedMethod(i18n.exists);
+
   const hasLoadedNamespace = createReactiveMemoizedMethod(
     i18n.hasLoadedNamespace,
   );
@@ -184,6 +209,40 @@ export const createReactiveI18n = (
   const t = createReactiveMemoizedMethod(i18n.t);
 
   const getFixedT = createReactiveMemoizedMethod(i18n.getFixedT);
+
+  const getResource = createReactiveMethod(i18n.getResource);
+
+  const addResource = (...args: Parameters<i18n["addResource"]>) => {
+    const returnI18n = i18n.addResource(...args);
+    i18nDirty();
+    return returnI18n;
+  };
+
+  const addResources = (...args: Parameters<i18n["addResources"]>) => {
+    const returnI18n = i18n.addResources(...args);
+    i18nDirty();
+    return returnI18n;
+  };
+
+  const addResourceBundle = (...args: Parameters<i18n["addResources"]>) => {
+    const returnI18n = i18n.addResourceBundle(...args);
+    i18nDirty();
+    return returnI18n;
+  };
+
+  const hasResourceBundle = createReactiveMemoizedMethod(
+    i18n.hasResourceBundle,
+  );
+
+  const getResourceBundle = createReactiveMethod(i18n.getResourceBundle);
+
+  const removeResourceBundle = (
+    ...args: Parameters<i18n["removeResourceBundle"]>
+  ) => {
+    const returnI18n = i18n.removeResourceBundle(...args);
+    i18nDirty();
+    return returnI18n;
+  };
 
   const on = (...args: Parameters<i18n["on"]>) => {
     i18n.on(...args);
@@ -232,11 +291,18 @@ export const createReactiveI18n = (
     hasLoadedNamespace,
     loadLanguages,
     loadNamespaces,
+    exists,
     getFixedT,
-    // @ts-expect-error TFunctionBrand issue
-    t,
+    t: t as i18n["t"],
     on,
     off,
     emit,
+    getResource,
+    addResource,
+    addResources,
+    addResourceBundle,
+    hasResourceBundle,
+    getResourceBundle,
+    removeResourceBundle,
   };
 };

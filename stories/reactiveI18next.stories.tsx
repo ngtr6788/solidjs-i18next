@@ -1,6 +1,6 @@
 import { type Meta } from "@storybook/html";
 import i18next, { type TFunction } from "i18next";
-import { createEffect, createSignal } from "solid-js";
+import { batch, createEffect, createSignal } from "solid-js";
 
 import { I18NextProvider } from "../src";
 import { createReactiveI18n } from "../src/reactiveI18next";
@@ -200,54 +200,137 @@ export const GetFixedTChanges = {
   },
 };
 
-// export const ResourcesReactiveOnAddResources = {
-//   render: () => {
-//     const i18n = createReactiveI18n();
+export const ResourcesReactiveOnAddResources = {
+  render: () => {
+    const i18n = createReactiveI18n();
 
-//     const handleAddResource = () => {
-//       batch(() => {
-//         i18n.addResource(
-//           "en",
-//           "very-informal",
-//           "special.button",
-//           "Super epic button in English",
-//         );
-//         i18n.addResource(
-//           "fr",
-//           "very-informal",
-//           "special.button",
-//           "Super epic button in French",
-//         );
-//       });
-//     };
+    const handleAddResource = () => {
+      batch(() => {
+        i18n.addResource(
+          "en",
+          "very-informal",
+          "special.button",
+          "Super epic button in English",
+        );
+        i18n.addResource(
+          "fr",
+          "very-informal",
+          "special.button",
+          "Super epic button in French",
+        );
+      });
+    };
 
-//     const handleRemoveResource = () => {
-//       batch(() => {
-//         i18n.removeResourceBundle("en", "very-informal");
-//         i18n.removeResourceBundle("fr", "very-informal");
-//       });
-//     };
+    const handleAddResources = () => {
+      batch(() => {
+        i18n.addResources("en", "very-informal", {
+          "special.button": "Epicly epic button in English",
+          "special.link": "Clicky move to new page in English",
+        });
+        i18n.addResources("fr", "very-informal", {
+          "special.button": "Epicly epic button in French",
+          "special.link": "Clicky move to new page in French",
+        });
+      });
+    };
 
-//     const enBundle = () =>
-//       JSON.stringify(i18n.getResourceBundle("en", "very-informal"));
-//     const hasEnBundle = () => i18n.hasResourceBundle("en", "very-informal");
+    const handleAddResourceBundle = () => {
+      batch(() => {
+        i18n.addResourceBundle(
+          "en",
+          "very-informal",
+          {
+            special: {
+              button: "Special button in English",
+              link: "Link in English",
+              boring: "Boring in English",
+            },
+          },
+          true,
+          true,
+        );
+        i18n.addResourceBundle(
+          "fr",
+          "very-informal",
+          {
+            special: {
+              button: "Special button in French",
+              link: "Link in French",
+              boring: "Boring in French",
+            },
+          },
+          true,
+          true,
+        );
+      });
+    };
 
-//     const frBundle = () =>
-//       JSON.stringify(i18n.getResourceBundle("fr", "very-informal"));
-//     const hasFrBundle = () => i18n.hasResourceBundle("en", "very-informal");
+    const handleRemoveResource = () => {
+      batch(() => {
+        i18n.removeResourceBundle("en", "very-informal");
+        i18n.removeResourceBundle("fr", "very-informal");
+      });
+    };
 
-//     createEffect(() => {
-//       console.log(enBundle());
-//       console.log(frBundle());
-//     });
+    const enBundle = () =>
+      JSON.stringify(i18n.getResourceBundle("en", "very-informal"));
+    const hasEnBundle = () => i18n.hasResourceBundle("en", "very-informal");
 
-//     return (
-//       <>
-//         <button on:click={handleAddResource}>Add resource</button>
-//         <button on:click={handleRemoveResource}>Remove resource</button>
-//         <p>{hasEnBundle() ? enBundle() : "No resource bundle for English"}</p>
-//         <p>{hasFrBundle() ? frBundle() : "No resource bundle for French"}</p>
-//       </>
-//     ) as Element;
-//   },
-// };
+    const frBundle = () =>
+      JSON.stringify(i18n.getResourceBundle("fr", "very-informal"));
+    const hasFrBundle = () => i18n.hasResourceBundle("en", "very-informal");
+
+    createEffect(() => {
+      console.log(enBundle());
+      console.log(frBundle());
+      console.log(i18n.getResource("en", "very-informal", "special"));
+    });
+
+    const [lng, setLng] = createSignal("en");
+
+    const handleChangeLanguage = () => {
+      setLng(lng() === "en" ? "fr" : "en");
+    };
+
+    return (
+      <>
+        <button on:click={handleAddResource}>Add resource</button>
+        <button on:click={handleAddResources}>Add resources</button>
+        <button on:click={handleAddResourceBundle}>Add resource bundle</button>
+        <button on:click={handleRemoveResource}>Remove resource</button>
+        <button on:click={handleChangeLanguage}>Change language</button>
+        <p>{hasEnBundle() ? enBundle() : "No resource bundle for English"}</p>
+        <p>{hasFrBundle() ? frBundle() : "No resource bundle for French"}</p>
+        <p>
+          {JSON.stringify(i18n.getResource(lng(), "very-informal", "special"))}
+        </p>
+        <p>{i18n.getResource(lng(), "very-informal", "special.button")}</p>
+        <p>{i18n.getResource(lng(), "very-informal", "special.link")}</p>
+        <p>{i18n.getResource(lng(), "very-informal", "special.boring")}</p>
+      </>
+    ) as Element;
+  },
+};
+
+export const KeyExists = {
+  render: () => {
+    const i18n = createReactiveI18n();
+
+    const keysList = ["button", "special.button", "nonexistent"];
+    const [key, setKey] = createSignal(0);
+
+    const handleChangeKey = () => {
+      setKey((key) => (key + 1) % keysList.length);
+    };
+
+    return (
+      <>
+        <button on:click={handleChangeKey}>Change key</button>
+        <p>
+          i18n.exists("{keysList[key()]}"){" "}
+          {String(i18n.exists(keysList[key()]))}
+        </p>
+      </>
+    ) as Element;
+  },
+};
