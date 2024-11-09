@@ -38,7 +38,7 @@ type InterimKeys =
  * - [ ] init
  * - [ ] loadResources
  * - [ ] use
- * - [~] exists
+ * - [x] exists
  * - [ ] getDataByLanguage
  * - [x] getFixedT
  * - [ ] reloadResources
@@ -47,13 +47,13 @@ type InterimKeys =
  * - [ ] format
  * - [ ] createInstance
  * - [ ] cloneInstance
- * - [~] getResource
- * - [~] addResource
- * - [~] addResources
- * - [~] addResourceBundle
- * - [~] hasResourceBundle
- * - [~] getResourceBundle
- * - [~] removeResourceBundle
+ * - [x] getResource
+ * - [x] addResource
+ * - [x] addResources
+ * - [x] addResourceBundle
+ * - [x] hasResourceBundle
+ * - [x] getResourceBundle
+ * - [x] removeResourceBundle
  * - [x] emit
  */
 
