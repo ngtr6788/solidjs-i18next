@@ -4,74 +4,14 @@ import { createEffect, createMemo, createSignal, useContext } from "solid-js";
 
 import { I18nContext } from "./I18NextProvider";
 
-type InterimKeys =
-  | "modules"
-  | "services"
-  | "store"
-  | "language"
-  | "languages"
-  | "resolvedLanguage"
-  | "isInitialized"
-  | "isInitializing"
-  | "initializedStoreOnce"
-  | "initializedLanguageOnce"
-  | "format"
-  | "changeLanguage"
-  | "setDefaultNamespace"
-  | "hasLoadedNamespace"
-  | "loadLanguages"
-  | "loadNamespaces"
-  | "exists"
-  | "dir"
-  | "getFixedT"
-  | "t"
-  | "on"
-  | "off"
-  | "emit"
-  | "loadResources"
-  | "reloadResources"
-  | "getDataByLanguage"
-  | "getResource"
-  | "addResource"
-  | "addResources"
-  | "addResourceBundle"
-  | "hasResourceBundle"
-  | "getResourceBundle"
-  | "removeResourceBundle";
-
-/**
- * Remaining attributes and methods
- * - [ ] init
- * - [~] loadResources
- * - [ ] use
- * - [x] exists
- * - [~] getDataByLanguage
- * - [x] getFixedT
- * - [~] reloadResources
- * - [~] setDefaultNamespace
- * - [~] dir
- * - [~] format
- * - [ ] createInstance
- * - [ ] cloneInstance
- * - [x] getResource
- * - [x] addResource
- * - [x] addResources
- * - [x] addResourceBundle
- * - [x] hasResourceBundle
- * - [x] getResourceBundle
- * - [x] removeResourceBundle
- * - [x] emit
- */
-
-/**
- * TODOs: Get a better "key" from arguments than JSON.stringify
- */
-
-export const createReactiveI18n = (
-  propI18n?: i18n,
-): Pick<i18n, InterimKeys> => {
+export const createReactiveI18n = (propI18n?: i18n): i18n => {
   const i18nContext = useContext(I18nContext);
   const i18n = propI18n || i18nContext?.i18n || i18next;
+
+  // @ts-expect-error This checks if the i18n passed in is already reactive
+  if (i18n.__isReactiveI18n__ === true) {
+    return i18n;
+  }
 
   const [i18nTrack, i18nDirty] = createSignal(undefined, { equals: false });
 
@@ -98,6 +38,14 @@ export const createReactiveI18n = (
     () => {
       i18nTrack();
       return i18n.store;
+    },
+    { equals: false },
+  );
+
+  const options = createMemo(
+    () => {
+      i18nTrack();
+      return i18n.options;
     },
     { equals: false },
   );
@@ -187,6 +135,30 @@ export const createReactiveI18n = (
     return func;
   };
 
+  const init = async (...args: Parameters<i18n["init"]>) => {
+    const t = await i18n.init(...args);
+    i18nDirty();
+    return t;
+  };
+
+  const use = (...args: Parameters<i18n["use"]>) => {
+    i18n.use(...args);
+    i18nDirty();
+    return reactiveI18n;
+  };
+
+  const createInstance = (...args: Parameters<i18n["createInstance"]>) => {
+    const newI18n = i18n.createInstance(...args);
+    const reactiveI18n = createReactiveI18n(newI18n);
+    return reactiveI18n;
+  };
+
+  const cloneInstance = (...args: Parameters<i18n["cloneInstance"]>) => {
+    const newI18n = i18n.cloneInstance(...args);
+    const reactiveI18n = createReactiveI18n(newI18n);
+    return reactiveI18n;
+  };
+
   const changeLanguage = async (
     lng?: string,
     callback?: Callback,
@@ -245,9 +217,9 @@ export const createReactiveI18n = (
   const getResource = createReactiveMethod(i18n.getResource);
 
   const addResource = (...args: Parameters<i18n["addResource"]>) => {
-    const returnI18n = i18n.addResource(...args);
+    i18n.addResource(...args);
     i18nDirty();
-    return returnI18n;
+    return reactiveI18n;
   };
 
   const addResources = (...args: Parameters<i18n["addResources"]>) => {
@@ -288,12 +260,16 @@ export const createReactiveI18n = (
     i18n.emit(...args);
   };
 
-  return {
+  const reactiveI18n = {
+    __isReactiveI18n__: true,
     get modules() {
       return modules();
     },
     get services() {
       return services();
+    },
+    get options() {
+      return options();
     },
     get store() {
       return store();
@@ -322,6 +298,10 @@ export const createReactiveI18n = (
     get format() {
       return format();
     },
+    init: init as i18n["init"],
+    use,
+    createInstance,
+    cloneInstance,
     changeLanguage,
     setDefaultNamespace,
     hasLoadedNamespace,
@@ -345,4 +325,6 @@ export const createReactiveI18n = (
     getResourceBundle,
     removeResourceBundle,
   };
+
+  return reactiveI18n;
 };
