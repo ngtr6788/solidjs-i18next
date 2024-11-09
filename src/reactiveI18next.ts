@@ -125,6 +125,33 @@ export const createReactiveI18n = (
     return i18n.initializedLanguageOnce;
   });
 
+  const createReactiveMemoizedMethod = <P extends unknown[], R>(
+    fn: (...args: P) => R,
+  ): ((...args: P) => R) => {
+    const cache = new ReactiveMap<string, R>();
+
+    createEffect(() => {
+      i18nTrack();
+      cache.keys().forEach((key) => {
+        const args = JSON.parse(key) as P;
+        cache.set(key, fn(...args));
+      });
+    });
+
+    const func = (...args: P): R => {
+      const key = JSON.stringify(args);
+      const result = cache.get(key);
+      if (result === undefined) {
+        const newResult = fn(...args);
+        cache.set(key, newResult);
+        return newResult;
+      }
+      return result;
+    };
+
+    return func;
+  };
+
   const changeLanguage = async (
     lng?: string,
     callback?: Callback,
@@ -133,29 +160,6 @@ export const createReactiveI18n = (
     const t = await tPromise;
     i18nDirty();
     return t;
-  };
-
-  const hasLoadedNamespaceCache = new ReactiveMap<string, boolean>();
-
-  createEffect(() => {
-    i18nTrack();
-    hasLoadedNamespaceCache.keys().forEach((key) => {
-      const args = JSON.parse(key) as Parameters<i18n["hasLoadedNamespace"]>;
-      hasLoadedNamespaceCache.set(key, i18n.hasLoadedNamespace(...args));
-    });
-  });
-
-  const hasLoadedNamespace = (
-    ...args: Parameters<i18n["hasLoadedNamespace"]>
-  ): boolean => {
-    const key = JSON.stringify(args);
-    const result = hasLoadedNamespaceCache.get(key);
-    if (result === undefined) {
-      const newResult = i18n.hasLoadedNamespace(...args);
-      hasLoadedNamespaceCache.set(key, newResult);
-      return newResult;
-    }
-    return result;
   };
 
   const loadLanguages = async (...args: Parameters<i18n["loadLanguages"]>) => {
@@ -172,50 +176,13 @@ export const createReactiveI18n = (
     i18nDirty();
   };
 
-  const tCache = new ReactiveMap<string, string>();
+  const hasLoadedNamespace = createReactiveMemoizedMethod(
+    i18n.hasLoadedNamespace,
+  );
 
-  createEffect(() => {
-    i18nTrack();
-    tCache.keys().forEach((key) => {
-      const args = JSON.parse(key) as Parameters<i18n["t"]>;
-      tCache.set(key, i18n.t(...args));
-    });
-  });
+  const t = createReactiveMemoizedMethod(i18n.t);
 
-  const t = (...args: Parameters<i18n["t"]>) => {
-    const key = JSON.stringify(args);
-    const result = tCache.get(key);
-    if (result === undefined) {
-      const originalResult = i18n.t(...args);
-      tCache.set(key, originalResult);
-      return originalResult;
-    }
-    return result;
-  };
-
-  const getFixedTCache = new ReactiveMap<
-    string,
-    ReturnType<i18n["getFixedT"]>
-  >();
-
-  createEffect(() => {
-    i18nTrack();
-    getFixedTCache.keys().forEach((key) => {
-      const args = JSON.parse(key) as Parameters<i18n["getFixedT"]>;
-      getFixedTCache.set(key, i18n.getFixedT(...args));
-    });
-  });
-
-  const getFixedT = (...args: Parameters<i18n["getFixedT"]>) => {
-    const key = JSON.stringify(args);
-    const result = getFixedTCache.get(key);
-    if (result === undefined) {
-      const originalResult = i18n.getFixedT(...args);
-      getFixedTCache.set(key, originalResult);
-      return originalResult;
-    }
-    return result;
-  };
+  const getFixedT = createReactiveMemoizedMethod(i18n.getFixedT);
 
   const on = (...args: Parameters<i18n["on"]>) => {
     i18n.on(...args);
