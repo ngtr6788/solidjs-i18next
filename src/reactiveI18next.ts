@@ -22,7 +22,8 @@ type InterimKeys =
   | "getFixedT"
   | "t"
   | "on"
-  | "off";
+  | "off"
+  | "emit";
 
 /**
  * Remaining attributes and methods
@@ -44,7 +45,7 @@ type InterimKeys =
  * - [ ] addResourceBundle
  * - [ ] hasResourceBundle
  * - [ ] removeResourceBundle
- * - [ ] emit
+ * - [x] emit
  */
 
 /**
@@ -192,6 +193,10 @@ export const createReactiveI18n = (
     i18n.off(...args);
   };
 
+  const emit = (...args: Parameters<i18n["emit"]>) => {
+    i18n.emit(...args);
+  };
+
   return {
     get modules() {
       return modules();
@@ -232,5 +237,6 @@ export const createReactiveI18n = (
     t,
     on,
     off,
+    emit,
   };
 };
