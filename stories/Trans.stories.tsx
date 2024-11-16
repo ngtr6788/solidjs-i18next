@@ -18,7 +18,7 @@ const i18nInit = {
         "to-learn-more-click-here":
           "To learn <italics>a whole lot</italics> more, click <CustomLink>here</CustomLink>",
         "bold-italics-underline":
-          "Number <1>one</1>, number <3>three</3>, number <6>six</6>",
+          "Number <1>one</1>, number <3>three</3>, number <6>six</6>, number <7>seven, <8>eight, </8> <9>nine, <10>ten</10></9></7>",
         "hello-name-have-number":
           "Hello {{name}}, you have {{numEmails}} unread emails today.",
         "greetings-name-number":
@@ -34,6 +34,8 @@ const i18nInit = {
         items_ordinal_two: "{{count}}nd item",
         items_ordinal_few: "{{count}}rd item",
         items_ordinal_other: "{{count}}th item",
+        "click-here-to-subscribe-buildable":
+          "Click <strong>here</strong> to <i>subscribe</i><br><p>and hit the notification button as well</p>",
       },
       silly: {
         "click-here-to-subscribe": "<0>SMASH LIKE</0> and <1>SUBSCRIBE</1>",
@@ -70,7 +72,7 @@ export const ComponentsArray = {
     return (
       <Trans
         i18nKey="click-here-to-subscribe"
-        components={[<a href="" />, <b />]}
+        dynamic={[{ component: "a", href: "" }, { component: "b" }]}
       />
     );
   },
@@ -81,33 +83,16 @@ export const ComponentsObject = {
     return (
       <Trans
         i18nKey="to-learn-more-click-here"
-        components={{
-          italics: <i />,
-          CustomLink: <a href="" />,
+        dynamic={{
+          italics: {
+            component: "i",
+          },
+          CustomLink: {
+            component: "a",
+            href: "",
+          },
         }}
       />
-    );
-  },
-};
-
-export const UsingChildren = {
-  render: () => {
-    const [i18nKey, setI18nKey] = createSignal("");
-
-    const handleClick = () => {
-      setI18nKey((i18nKey) => (i18nKey === "" ? "bold-italics-underline" : ""));
-    };
-
-    return (
-      <>
-        <button on:click={handleClick}>Change i18n key</button>
-        <div>
-          <Trans i18nKey={i18nKey()}>
-            This text is <b>BOLD</b>, this text is <i>italic</i>, this text is{" "}
-            <u>underlined</u>
-          </Trans>
-        </div>
-      </>
     );
   },
 };
@@ -138,9 +123,11 @@ export const WithInterpolation = {
           hello-have-name-number
         </button>
         <button on:click={setGreetingsNameNumber}>greeings-name-number</button>
-        <Trans i18nKey={i18nKey()}>
-          Someone with the name {{ name }} has email count of {{ numEmails }}
-        </Trans>
+        <Trans
+          i18nKey={i18nKey()}
+          defaultValue="Someone with the name {{ name }} has email count of {{ numEmails }}"
+          values={{ name, numEmails }}
+        />
       </div>
     );
   },
@@ -182,7 +169,7 @@ export const TranslationsWithAndWithoutInterpolation = {
         <Trans
           i18nKey={i18nKey()}
           values={{ name, numEmails }}
-          components={comps()}
+          dynamic={comps()}
         />
       </div>
     );
@@ -348,7 +335,7 @@ export const ChangeNamespace = {
         <Trans
           i18nKey="click-here-to-subscribe"
           ns={ns()}
-          components={[<a href="" />, <b />]}
+          dynamic={[{ component: "a", href: "" }, { component: "b" }]}
         />
       </>
     );
@@ -372,7 +359,7 @@ export const ChangeLanguageWithI18n = {
           <Trans
             t={t}
             i18nKey="click-here-to-subscribe"
-            components={[<a href="" />, <b />]}
+            dynamic={[{ component: "a", href: "" }, { component: "b" }]}
           />
         </p>
       </>
@@ -407,5 +394,11 @@ export const UseTOptionsExamples = {
         </p>
       </>
     );
+  },
+};
+
+export const TranslationStringBuildAlone = {
+  render: () => {
+    return <Trans i18nKey="click-here-to-subscribe-buildable" />;
   },
 };

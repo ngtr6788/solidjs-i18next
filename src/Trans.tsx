@@ -2,18 +2,25 @@ import { type IDom, parse } from "html-parse-string";
 import type { i18n, TFunction, TOptions, TOptionsBase } from "i18next";
 import i18next from "i18next";
 import {
-  children,
   type Component,
   type JSXElement,
   mergeProps,
   Show,
   untrack,
   useContext,
+  type ValidComponent,
 } from "solid-js";
+import { Dynamic, type DynamicProps } from "solid-js/web";
 
 import { I18nContext } from "./I18NextProvider.tsx";
 
-type TransChild = JSXElement | Record<string, unknown>;
+type TransDynamic<T extends ValidComponent> = DynamicProps<T> & {
+  children?: TransDynamicIndexable;
+};
+
+interface TransDynamicIndexable {
+  [key: number | string]: TransDynamic<ValidComponent>;
+}
 
 interface TransProps {
   i18nKey?: string;
@@ -26,9 +33,8 @@ interface TransProps {
   tOptions?: TOptionsBase;
   values?: Record<string, unknown>;
 
-  /* Use the JSX and things */
-  components?: readonly JSXElement[] | Record<string, JSXElement>;
-  children?: TransChild | readonly TransChild[];
+  /* Use the HTMLs and Components thing */
+  dynamic?: TransDynamicIndexable;
 
   /* Use custom t or i18n */
   t?: TFunction;
@@ -36,11 +42,6 @@ interface TransProps {
 }
 
 export const Trans: Component<TransProps> = (props) => {
-  // @ts-expect-error Type 'TransChild | readonly TransChild[]' is not assignable to type 'Element'.
-  const c = children(() => props.children);
-
-  const childrenArray = () => c.toArray();
-
   const i18nContext = useContext(I18nContext);
 
   const i18n = () => props.i18n || i18nContext?.i18n || i18next;
@@ -59,63 +60,9 @@ export const Trans: Component<TransProps> = (props) => {
   const keepArray = ["br", "strong", "i", "p"];
   const keepRegex = new RegExp(keepArray.map((keep) => `<${keep}`).join("|"));
 
-  const nodesToString = (nodes: TransChild[]): string => {
-    let stringNode = "";
+  const defaultValue = () => props.defaultValue || props.i18nKey;
 
-    nodes.forEach((node, i) => {
-      if (typeof node === "string") {
-        stringNode += `${node}`;
-      } else if (node instanceof Element) {
-        if (node.nodeType === Node.TEXT_NODE) {
-          stringNode += `${node.textContent}`;
-        } else {
-          const nodeName = node.nodeName.toLocaleLowerCase();
-          const shouldKeepChild = keepArray.includes(nodeName);
-          const nodeChildren = node.childNodes;
-          const attributeLen = node.attributes.length;
-
-          if (nodeChildren.length === 0) {
-            if (shouldKeepChild && attributeLen === 0) {
-              stringNode += `<${nodeName} />`;
-            } else {
-              stringNode += `<${i}></${i}>`;
-            }
-          } else {
-            if (
-              shouldKeepChild &&
-              nodeChildren.length === 1 &&
-              nodeChildren[0].nodeType === Node.TEXT_NODE
-            ) {
-              stringNode += `<${nodeName}>${nodeChildren[0].textContent}</${nodeName}>`;
-            } else {
-              const content = nodesToString([...nodeChildren]);
-              stringNode += `<${i}>${content}</${i}>`;
-            }
-          }
-        }
-      } else if (typeof node === "object") {
-        const { format, ...clone } = node as {
-          format?: string;
-          [key: string]: unknown;
-        };
-        const keys = Object.keys(clone);
-
-        if (keys.length === 1) {
-          const value = format ? `${keys[0]}, ${format}` : keys[0];
-          stringNode += `{{${value}}}`;
-        }
-      }
-    });
-
-    return stringNode;
-  };
-
-  const nodesAsString = () => nodesToString(childrenArray());
-
-  const defaultValue = () =>
-    props.defaultValue || nodesAsString() || props.i18nKey;
-
-  const key = () => props.i18nKey || nodesAsString() || defaultValue();
+  const key = () => props.i18nKey || defaultValue();
 
   const values = () => {
     const defaultVariables = i18n().options?.interpolation?.defaultVariables;
@@ -150,30 +97,11 @@ export const Trans: Component<TransProps> = (props) => {
     return translateStr && keepRegex.test(translateStr);
   };
 
-  const components = () => props.components ?? childrenArray();
-
   const ast = () => parse(`<0>${translation()}</0>`);
-
-  const opts = () => {
-    const data = {};
-
-    const comps = components() as { [key: string | number]: JSXElement };
-    if (comps) {
-      Object.keys(comps).forEach((key) => {
-        const child = comps[key];
-        if (typeof child === "object" && !(child instanceof Node)) {
-          Object.assign(data, child);
-        }
-      });
-    }
-
-    const combinedOpts = mergeProps(data, tOpts());
-    return combinedOpts;
-  };
 
   const interpolate = (content: string | undefined | null) => {
     const i18nInstance = untrack(i18n);
-    const translateOpts = untrack(opts);
+    const translateOpts = untrack(tOpts);
 
     return i18nInstance.services.interpolator.interpolate(
       content ?? "",
@@ -184,87 +112,68 @@ export const Trans: Component<TransProps> = (props) => {
   };
 
   const buildContent = (
-    jsxNodes: readonly JSXElement[] | Record<string, JSXElement>,
     astNodes: IDom[],
+    jsxNodes?: TransDynamicIndexable | undefined,
   ) => {
+    console.log(astNodes, jsxNodes);
     return astNodes.reduce(
       (mem, node) => {
         if (node.type === "text") {
           const content = interpolate(node.content);
           mem.push(content);
         } else if (node.type === "tag") {
-          const nodes = jsxNodes as {
-            [key: string | number]: JSXElement;
-          };
           const child =
-            nodes[parseInt(node.name, 10)] ?? nodes[node.name] ?? {};
+            jsxNodes?.[parseInt(node.name, 10)] ?? jsxNodes?.[node.name];
 
-          if (typeof child === "string") {
-            const value = interpolate(child);
-            mem.push(value);
-          } else if (child instanceof Element) {
-            if (child.nodeType === Node.TEXT_NODE) {
-              const value = interpolate(child.textContent);
-              mem.push(value);
-            } else {
-              const childChildren = buildContent(
-                [...child.childNodes],
-                node.children,
-              );
-              if (childChildren.length === 0 && child.hasChildNodes()) {
-                const childDeepClone = child.cloneNode(true) as Element;
-                mem.push(childDeepClone);
-              } else {
-                const childShallowClone = child.cloneNode(false) as Element;
-                childShallowClone.replaceChildren(...childChildren);
-                mem.push(childShallowClone);
-              }
-            }
+          if (child) {
+            mem.push(
+              <Dynamic
+                {...child}
+                children={buildContent(node.children, child.children)}
+              />,
+            );
           } else if (Number.isNaN(parseFloat(node.name))) {
             if (keepArray.includes(node.name)) {
               const elem = document.createElement(node.name);
               if (node.voidElement) {
                 mem.push(elem);
               } else {
-                const childChildren = buildContent([], node.children);
+                const childChildren = buildContent(node.children) as Node[];
                 elem.replaceChildren(...childChildren);
                 mem.push(elem);
               }
             } else if (node.voidElement) {
               mem.push(`<${node.name}></${node.name}>`);
             } else {
-              const inner = buildContent([], node.children)
-                .map((x) => (typeof x === "string" ? x : x.outerHTML))
+              const inner = buildContent(node.children)
+                .map((x) => {
+                  if (x instanceof Element) {
+                    return x.outerHTML;
+                  } else {
+                    return x;
+                  }
+                })
                 .join();
               mem.push(`<${node.name}>${inner}</${node.name}>`);
             }
-          } else if (typeof child === "object" && !(child instanceof Element)) {
-            const nodeContent = node.children?.[0]?.content;
-            const translationContent = interpolate(nodeContent);
-
-            if (translationContent) {
-              mem.push(translationContent);
-            }
           } else {
-            // TODO: What case would lead us here?
+            mem.push(buildContent(node.children));
           }
         }
         return mem;
       },
-      [] as (string | Element)[],
+      [] as (string | JSXElement)[],
     );
   };
 
   const content = () => {
-    return buildContent(components(), ast()[0].children);
+    return buildContent(ast()[0].children, props.dynamic);
   };
 
   return (
     <Show when={translation()}>
       <Show
-        when={
-          props.components ?? props.children ?? emptyChildrenButNeedsHandling()
-        }
+        when={props.dynamic ?? emptyChildrenButNeedsHandling()}
         fallback={translation()}
       >
         {content()}
