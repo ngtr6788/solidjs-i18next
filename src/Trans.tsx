@@ -18,9 +18,11 @@ export type TransDynamic<T extends ValidComponent> = DynamicProps<T> & {
   children?: TransDynamicIndexable;
 };
 
-export interface TransDynamicIndexable {
-  [key: number | string]: TransDynamic<ValidComponent>;
-}
+export type TransDynamicIndexable =
+  | Array<TransDynamic<ValidComponent>>
+  | {
+      [key: string | number]: TransDynamic<ValidComponent>;
+    };
 
 export interface TransProps {
   i18nKey?: string;
@@ -113,7 +115,7 @@ export const Trans: Component<TransProps> = (props) => {
 
   const buildContent = (
     astNodes: IDom[],
-    jsxNodes?: TransDynamicIndexable | undefined,
+    dynamic?: TransDynamicIndexable | undefined,
   ) => {
     return astNodes.reduce(
       (mem, node) => {
@@ -121,8 +123,11 @@ export const Trans: Component<TransProps> = (props) => {
           const content = interpolate(node.content);
           mem.push(content);
         } else if (node.type === "tag") {
+          const dynNodes = dynamic as {
+            [key: string | number]: TransDynamic<ValidComponent>;
+          };
           const child =
-            jsxNodes?.[parseInt(node.name, 10)] ?? jsxNodes?.[node.name];
+            dynNodes?.[parseInt(node.name, 10)] ?? dynNodes?.[node.name];
 
           if (child) {
             mem.push(

@@ -1,8 +1,13 @@
 import { type Meta } from "@storybook/html";
 import i18next from "i18next";
-import { createSignal, type JSX, type JSXElement } from "solid-js";
+import { createSignal, type JSX } from "solid-js";
 
-import { I18NextProvider, Trans, useTranslation } from "../src";
+import {
+  I18NextProvider,
+  Trans,
+  type TransDynamicIndexable,
+  useTranslation,
+} from "../src";
 
 const i18nInit = {
   resources: {
@@ -139,7 +144,7 @@ export const TranslationsWithAndWithoutInterpolation = {
     const numEmails = 103;
 
     const [i18nKey, setI18nKey] = createSignal("bold-italics-underline");
-    const [comps, setComps] = createSignal<Array<JSXElement> | undefined>(
+    const [comps, setComps] = createSignal<TransDynamicIndexable | undefined>(
       undefined,
     );
 
