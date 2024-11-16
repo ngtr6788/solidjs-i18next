@@ -6,7 +6,7 @@ import {
   type UseTranslationOptions,
 } from "./useTranslation.ts";
 
-interface TranslationProps extends UseTranslationOptions {
+export interface TranslationProps extends UseTranslationOptions {
   children: (t: TFunction, i18n: i18n) => JSXElement;
 }
 

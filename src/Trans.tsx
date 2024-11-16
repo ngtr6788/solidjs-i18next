@@ -14,15 +14,15 @@ import { Dynamic, type DynamicProps } from "solid-js/web";
 
 import { I18nContext } from "./I18NextProvider.tsx";
 
-type TransDynamic<T extends ValidComponent> = DynamicProps<T> & {
+export type TransDynamic<T extends ValidComponent> = DynamicProps<T> & {
   children?: TransDynamicIndexable;
 };
 
-interface TransDynamicIndexable {
+export interface TransDynamicIndexable {
   [key: number | string]: TransDynamic<ValidComponent>;
 }
 
-interface TransProps {
+export interface TransProps {
   i18nKey?: string;
 
   /* t function options */
@@ -115,7 +115,6 @@ export const Trans: Component<TransProps> = (props) => {
     astNodes: IDom[],
     jsxNodes?: TransDynamicIndexable | undefined,
   ) => {
-    console.log(astNodes, jsxNodes);
     return astNodes.reduce(
       (mem, node) => {
         if (node.type === "text") {

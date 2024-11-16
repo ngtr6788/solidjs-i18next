@@ -1,5 +1,5 @@
-export { I18NextProvider } from "./I18NextProvider.tsx";
-export { createReactiveI18n } from "./reactiveI18next.ts";
-export { Trans } from "./Trans.tsx";
-export { Translation } from "./Translation.tsx";
-export { useTranslation } from "./useTranslation.ts";
+export * from "./I18NextProvider.tsx";
+export * from "./reactiveI18next.ts";
+export * from "./Trans.tsx";
+export * from "./Translation.tsx";
+export * from "./useTranslation.ts";
