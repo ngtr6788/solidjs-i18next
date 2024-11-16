@@ -101,10 +101,10 @@ export const createReactiveI18n = (propI18n?: i18n): i18n => {
 
     createEffect(() => {
       i18nTrack();
-      cache.keys().forEach((key) => {
+      for (const key of cache.keys()) {
         const args = JSON.parse(key) as P;
         cache.set(key, fn(...args));
-      });
+      }
     });
 
     const func = (...args: P): R => {
