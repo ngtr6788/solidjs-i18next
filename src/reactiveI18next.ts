@@ -1,10 +1,22 @@
 import { ReactiveMap } from "@solid-primitives/map";
-import i18next, { type Callback, type i18n, type TFunction } from "i18next";
-import { createEffect, createMemo, createSignal, useContext } from "solid-js";
+import i18next, { type i18n } from "i18next";
+import {
+  createEffect,
+  createMemo,
+  createSignal,
+  onCleanup,
+  useContext,
+} from "solid-js";
 
 import { I18nContext } from "./I18NextProvider";
 
-export const createReactiveI18n = (propI18n?: i18n): i18n => {
+const I18N_LISTENERS = ["initialized", "languageChanged", "loaded"] as const;
+
+const I18N_STORE_LISTENERS = ["added", "removed"] as const;
+
+export const createReactiveI18n = (
+  propI18n?: i18n,
+): Omit<i18n, "createInstance" | "cloneInstance"> => {
   const i18nContext = useContext(I18nContext);
   const i18n = propI18n || i18nContext?.i18n || i18next;
 
@@ -16,7 +28,7 @@ export const createReactiveI18n = (propI18n?: i18n): i18n => {
   const [i18nTrack, i18nDirty] = createSignal(undefined, { equals: false });
 
   // NOTE TO SELF: Attributes are just signals that return the items as is FOR NOW.
-  // I could put it in a store later on. No guarantees though.
+  // TODO: I could put it in a store later on. No guarantees though.
 
   const modules = createMemo(
     () => {
@@ -123,6 +135,8 @@ export const createReactiveI18n = (propI18n?: i18n): i18n => {
 
   // This method exists when the return value is not a primitive,
   // so that we can actually see the changes to the array/object/etc.
+  // However, this causes reaction even when no change took place
+  // TODO: Add a deep comparison or store or something IDK
   const createReactiveMethod = <P extends unknown[], R>(
     fn: (...args: P) => R,
   ): ((...args: P) => R) => {
@@ -135,133 +149,95 @@ export const createReactiveI18n = (propI18n?: i18n): i18n => {
     return func;
   };
 
-  const init = async (...args: Parameters<i18n["init"]>) => {
-    const t = await i18n.init(...args);
-    i18nDirty();
-    return t;
-  };
+  const init = i18n.init.bind(i18n);
 
-  const use = (...args: Parameters<i18n["use"]>) => {
-    i18n.use(...args);
-    i18nDirty();
-    return reactiveI18n;
-  };
+  const use = i18n.use.bind(i18n);
 
-  const createInstance = (...args: Parameters<i18n["createInstance"]>) => {
-    const newI18n = i18n.createInstance(...args);
-    const reactiveI18n = createReactiveI18n(newI18n);
-    return reactiveI18n;
-  };
+  // const createInstance = (...args: Parameters<i18n["createInstance"]>) => {
+  //   const newI18n = i18n.createInstance(...args);
+  //   const reactiveI18n = createReactiveI18n(newI18n);
+  //   return reactiveI18n;
+  // };
+  //
+  // const cloneInstance = (...args: Parameters<i18n["cloneInstance"]>) => {
+  //   const newI18n = i18n.cloneInstance(...args);
+  //   const reactiveI18n = createReactiveI18n(newI18n);
+  //   return reactiveI18n;
+  // };
 
-  const cloneInstance = (...args: Parameters<i18n["cloneInstance"]>) => {
-    const newI18n = i18n.cloneInstance(...args);
-    const reactiveI18n = createReactiveI18n(newI18n);
-    return reactiveI18n;
-  };
+  const changeLanguage = i18n.changeLanguage.bind(i18n);
 
-  const changeLanguage = async (
-    lng?: string,
-    callback?: Callback,
-  ): Promise<TFunction> => {
-    const tPromise = i18n.changeLanguage(lng, callback);
-    const t = await tPromise;
-    i18nDirty();
-    return t;
-  };
+  const setDefaultNamespace = i18n.setDefaultNamespace.bind(i18n);
 
-  const setDefaultNamespace = (
-    ...args: Parameters<i18n["setDefaultNamespace"]>
-  ) => {
-    i18n.setDefaultNamespace(...args);
-    i18nDirty();
-  };
+  const loadLanguages = i18n.loadLanguages.bind(i18n);
 
-  const loadLanguages = async (...args: Parameters<i18n["loadLanguages"]>) => {
-    await i18n.loadLanguages(...args);
-    i18nDirty();
-  };
+  const loadNamespaces = i18n.loadNamespaces.bind(i18n);
 
-  const loadNamespaces = async (
-    ...args: Parameters<i18n["loadNamespaces"]>
-  ) => {
-    await i18n.loadNamespaces(...args);
-    i18nDirty();
-  };
+  const loadResources = i18n.loadResources.bind(i18n);
 
-  const loadResources = (...args: Parameters<i18n["loadResources"]>) => {
-    i18n.loadResources(...args);
-    i18nDirty();
-  };
+  const reloadResources = i18n.reloadResources.bind(i18n);
 
-  const reloadResources = async (
-    ...args: Parameters<i18n["reloadResources"]>
-  ) => {
-    await i18n.reloadResources(...args);
-    i18nDirty();
-  };
+  const getDataByLanguage = createReactiveMethod(
+    i18n.getDataByLanguage.bind(i18n),
+  );
 
-  const getDataByLanguage = createReactiveMethod(i18n.getDataByLanguage);
-
-  const exists = createReactiveMemoizedMethod(i18n.exists);
+  const exists = createReactiveMemoizedMethod(i18n.exists.bind(i18n));
 
   const hasLoadedNamespace = createReactiveMemoizedMethod(
-    i18n.hasLoadedNamespace,
+    i18n.hasLoadedNamespace.bind(i18n),
   );
 
-  const dir = createReactiveMethod(i18n.dir);
+  const dir = createReactiveMethod(i18n.dir.bind(i18n));
 
-  const t = createReactiveMemoizedMethod(i18n.t);
+  const t = createReactiveMemoizedMethod(i18n.t.bind(i18n));
 
-  const getFixedT = createReactiveMemoizedMethod(i18n.getFixedT);
+  const getFixedT = createReactiveMemoizedMethod(i18n.getFixedT.bind(i18n));
 
-  const getResource = createReactiveMethod(i18n.getResource);
+  const getResource = createReactiveMethod(i18n.getResource.bind(i18n));
 
-  const addResource = (...args: Parameters<i18n["addResource"]>) => {
-    i18n.addResource(...args);
-    i18nDirty();
-    return reactiveI18n;
-  };
+  const addResource = i18n.addResource.bind(i18n);
 
-  const addResources = (...args: Parameters<i18n["addResources"]>) => {
-    const returnI18n = i18n.addResources(...args);
-    i18nDirty();
-    return returnI18n;
-  };
+  const addResources = i18n.addResources.bind(i18n);
 
-  const addResourceBundle = (...args: Parameters<i18n["addResources"]>) => {
-    const returnI18n = i18n.addResourceBundle(...args);
-    i18nDirty();
-    return returnI18n;
-  };
+  const addResourceBundle = i18n.addResourceBundle.bind(i18n);
 
   const hasResourceBundle = createReactiveMemoizedMethod(
-    i18n.hasResourceBundle,
+    i18n.hasResourceBundle.bind(i18n),
   );
 
-  const getResourceBundle = createReactiveMethod(i18n.getResourceBundle);
+  const getResourceBundle = createReactiveMethod(
+    i18n.getResourceBundle.bind(i18n),
+  );
 
-  const removeResourceBundle = (
-    ...args: Parameters<i18n["removeResourceBundle"]>
-  ) => {
-    const returnI18n = i18n.removeResourceBundle(...args);
-    i18nDirty();
-    return returnI18n;
-  };
+  const removeResourceBundle = i18n.removeResourceBundle.bind(i18n);
 
-  const on = (...args: Parameters<i18n["on"]>) => {
-    i18n.on(...args);
-  };
+  const on = i18n.on.bind(i18n);
 
-  const off = (...args: Parameters<i18n["off"]>) => {
-    i18n.off(...args);
-  };
+  const off = i18n.off.bind(i18n);
 
-  const emit = (...args: Parameters<i18n["emit"]>) => {
-    i18n.emit(...args);
-  };
+  const emit = i18n.emit.bind(i18n);
+
+  createEffect(() => {
+    I18N_LISTENERS.forEach((event) => {
+      i18n.on(event, i18nDirty);
+    });
+
+    I18N_STORE_LISTENERS.forEach((event) => {
+      i18n.store.on(event, i18nDirty);
+    });
+
+    onCleanup(() => {
+      I18N_LISTENERS.forEach((event) => {
+        i18n.off(event, i18nDirty);
+      });
+
+      I18N_STORE_LISTENERS.forEach((event) => {
+        i18n.store.off(event, i18nDirty);
+      });
+    });
+  });
 
   const reactiveI18n = {
-    __isReactiveI18n__: true,
     get modules() {
       return modules();
     },
@@ -298,10 +274,10 @@ export const createReactiveI18n = (propI18n?: i18n): i18n => {
     get format() {
       return format();
     },
-    init: init as i18n["init"],
+    init,
     use,
-    createInstance,
-    cloneInstance,
+    // createInstance,
+    // cloneInstance,
     changeLanguage,
     setDefaultNamespace,
     hasLoadedNamespace,
@@ -316,7 +292,7 @@ export const createReactiveI18n = (propI18n?: i18n): i18n => {
     off,
     emit,
     loadResources,
-    reloadResources: reloadResources as i18n["reloadResources"],
+    reloadResources,
     getResource,
     addResource,
     addResources,
