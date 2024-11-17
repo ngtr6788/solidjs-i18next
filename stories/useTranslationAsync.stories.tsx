@@ -1,7 +1,7 @@
 import { type Meta } from "@storybook/html";
 import i18next from "i18next";
 import resourcesToBackend from "i18next-resources-to-backend";
-import { Show, Suspense } from "solid-js";
+import { Show } from "solid-js";
 
 import { I18NextProvider, useTranslation } from "../src";
 
@@ -34,20 +34,15 @@ const meta: Meta = {
 
 export default meta;
 
-export const UsingSuspense = {
+export const UsingReadyWaitForReady = {
   render: () => {
-    const [t, , ready] = useTranslation({ useSuspense: true });
+    const [t, , ready] = useTranslation();
 
     // Expected behaviour: Loading... should appear because useSuspense is true
     return (
       <>
         <p>t is ready: {String(ready())}</p>
         <p>
-          {/* This shows test-string instead of Loading... because useSuspense is false */}
-          <Suspense fallback={"Loading..."}>{t("test-string")}</Suspense>
-        </p>
-        <p>
-          {/* Because useSuspense is false, we will have to use ready to check if things are ready */}
           <Show when={ready()} fallback={"Loading..."}>
             {t("test-string")}
           </Show>
@@ -57,24 +52,3 @@ export const UsingSuspense = {
   },
 };
 
-export const NotUsingSuspense = {
-  render: () => {
-    const [t, , ready] = useTranslation({ useSuspense: false });
-
-    return (
-      <>
-        <p>t is ready: {String(ready())}</p>
-        <p>
-          {/* This shows test-string instead of Loading... because useSuspense is false */}
-          <Suspense fallback={"Loading..."}>{t("test-string")}</Suspense>
-        </p>
-        <p>
-          {/* Because useSuspense is false, we will have to use ready to check if things are ready */}
-          <Show when={ready()} fallback={"Loading..."}>
-            {t("test-string")}
-          </Show>
-        </p>
-      </>
-    );
-  },
-};

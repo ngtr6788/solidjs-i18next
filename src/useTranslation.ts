@@ -1,14 +1,12 @@
-import type { Callback, i18n, Namespace, TFunction } from "i18next";
+import type { i18n, Namespace, TFunction } from "i18next";
 import i18next from "i18next";
 import {
   type Accessor,
   batch,
   createEffect,
   createMemo,
-  createResource,
   createSignal,
   onCleanup,
-  untrack,
   useContext,
 } from "solid-js";
 
@@ -26,159 +24,79 @@ function hasLoadedNamespace(
   }
 }
 
-async function loadLanguages(
-  i18n: i18n,
-  lng: string | readonly string[],
-  namespaces: string | readonly string[],
-  callback?: Callback,
-): Promise<void> {
-  const namespacesArray =
-    typeof namespaces === "string" ? [namespaces] : namespaces;
-
-  namespacesArray.forEach((namespace) => {
-    if (i18n.options?.ns && i18n.options.ns.indexOf(namespace) < 0) {
-      if (typeof i18n.options.ns === "string") {
-        i18n.options.ns = [i18n.options.ns, namespace];
-      } else {
-        (i18n.options.ns as string[]).push(namespace);
-      }
-    }
-  });
-
-  await batch(() => i18n.loadLanguages(lng, callback));
-}
-
-async function loadNamespaces(
-  i18n: i18n,
-  namespaces: string | readonly string[],
-  callback?: Callback,
-): Promise<void> {
-  await batch(() => i18n.loadNamespaces(namespaces, callback));
-}
-
 export interface UseTranslationOptions {
   keyPrefix?: string;
   lng?: string;
   ns?: Namespace<string>;
-  useSuspense?: boolean;
   i18n?: i18n;
 }
+
+const I18N_LISTENERS = ["initialized", "languageChanged", "loaded"] as const;
+
+const I18N_STORE_LISTENERS = ["added", "removed"] as const;
 
 export function useTranslation(
   options: UseTranslationOptions = {},
 ): [TFunction, i18n, Accessor<boolean>] {
   const i18nContext = useContext(I18nContext);
 
-  const [dirty, setDirty] = createSignal(true);
-
   const i18n = options.i18n || i18nContext?.i18n || i18next;
 
-  const keyPrefix = () => options.keyPrefix;
+  const lng = createMemo(() => options.lng || null);
 
-  const lng = () => options.lng;
+  const keyPrefix = createMemo(() => options.keyPrefix);
 
-  const ns = () => options.ns;
+  const namespaces = createMemo(
+    () => {
+      const nsInit = options.ns || i18nContext?.ns || i18n.options?.defaultNS;
+      return typeof nsInit === "string" ? [nsInit] : nsInit || ["translation"];
+    },
+    [],
+    {
+      equals: (prevNamespaces, curNamespaces) =>
+        prevNamespaces.length === curNamespaces.length &&
+        curNamespaces.some((val, i) => val === prevNamespaces[i]),
+    },
+  );
 
-  const useSuspense = () => options.useSuspense ?? true;
-
-  const namespaces = () => {
-    const nsInit = ns() || i18nContext?.ns || i18n.options?.defaultNS;
-    return typeof nsInit === "string" ? [nsInit] : nsInit || ["translation"];
-  };
-
-  const getT = () => {
-    return i18n.getFixedT(lng() || null, namespaces(), keyPrefix());
-  };
+  const [trackT, dirtyT] = createSignal(undefined, { equals: false });
 
   const ready = createMemo(() => {
-    dirty();
+    trackT();
     return (
       (Boolean(i18n.isInitialized) || Boolean(i18n.initializedStoreOnce)) &&
       namespaces().every((ns) =>
-        hasLoadedNamespace(i18n, ns, lng() || undefined),
+        hasLoadedNamespace(i18n, ns, options.lng || undefined),
       )
     );
   });
 
-  const loadLanguageNamespaces = async (callback?: Callback) => {
-    const language = lng();
-    if (language) {
-      await loadLanguages(i18n, language, namespaces(), callback);
-    } else {
-      await loadNamespaces(i18n, namespaces(), callback);
-    }
-  };
-
-  const loadLngNsT = async (): Promise<ReturnType<typeof getT>> => {
-    if (!ready() && untrack(useSuspense)) {
-      await loadLanguageNamespaces();
-      setDirty((d) => !d);
-    }
-    return getT();
-  };
-
-  const [translate, { mutate: setTranslate, refetch }] = createResource(
-    loadLngNsT,
-    { initialValue: getT() },
-  );
-
   createEffect(() => {
-    if (!ready()) {
-      if (untrack(useSuspense)) {
-        refetch();
-      } else {
-        loadLanguageNamespaces().then(() => {
-          setDirty((d) => !d);
-          setTranslate(() => getT());
-        });
-      }
-    }
-  });
+    I18N_LISTENERS.forEach((event) => {
+      i18n.on(event, dirtyT);
+    });
 
-  createEffect((prevNamespaces: readonly string[]) => {
-    const differentNamespaces =
-      prevNamespaces.length !== namespaces().length ||
-      namespaces().some((val, i) => val !== prevNamespaces[i]);
-
-    if (ready() && differentNamespaces) {
-      setTranslate(() => getT());
-    }
-
-    return namespaces();
-  }, []);
-
-  createEffect((prevLng) => {
-    if (ready() && prevLng !== lng()) {
-      setTranslate(() => getT());
-    }
-
-    return lng();
-  }, "");
-
-  createEffect((prevKeyPrefix) => {
-    if (ready() && prevKeyPrefix !== keyPrefix()) {
-      setTranslate(() => getT());
-    }
-
-    return keyPrefix();
-  }, "");
-
-  createEffect(() => {
-    const resetT = () => {
-      setTranslate(() => getT());
-    };
-
-    if (i18n) {
-      i18n.on("languageChanged", resetT);
-    }
+    I18N_STORE_LISTENERS.forEach((event) => {
+      i18n.store.on(event, dirtyT);
+    });
 
     onCleanup(() => {
-      i18n.off("languageChanged", resetT);
+      I18N_LISTENERS.forEach((event) => {
+        i18n.off(event, dirtyT);
+      });
+
+      I18N_STORE_LISTENERS.forEach((event) => {
+        i18n.store.off(event, dirtyT);
+      });
     });
   });
 
   // @ts-expect-error Property '$TFunctionBrand' is missing in type... TODO: Deal with this
-  const t: TFunction = (...args) => translate()(...args);
+  const t: TFunction = (...args) => {
+    trackT();
+    const fixedT = i18n.getFixedT(lng(), namespaces(), keyPrefix());
+    return fixedT(...args);
+  };
 
   return [t, i18n, ready];
 }
