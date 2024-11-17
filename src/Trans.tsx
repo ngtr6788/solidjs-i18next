@@ -51,7 +51,7 @@ export const Trans: Component<TransProps> = (props) => {
   const t = () => props.t || i18n().t.bind(i18n());
 
   const namespaces = () => {
-    const namespaces = props.ns || i18nContext?.ns || i18n().options?.defaultNS;
+    const namespaces = props.ns || i18n().options?.defaultNS;
     const namespacesArray =
       typeof namespaces === "string"
         ? [namespaces]

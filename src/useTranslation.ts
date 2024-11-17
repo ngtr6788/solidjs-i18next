@@ -48,7 +48,7 @@ export function useTranslation(
 
   const namespaces = createMemo(
     () => {
-      const nsInit = options.ns || i18nContext?.ns || i18n.options?.defaultNS;
+      const nsInit = options.ns || i18n.options?.defaultNS;
       return typeof nsInit === "string" ? [nsInit] : nsInit || ["translation"];
     },
     [],

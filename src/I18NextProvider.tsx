@@ -1,9 +1,8 @@
-import { type i18n, type Namespace } from "i18next";
+import { type i18n } from "i18next";
 import { createContext, type ParentComponent } from "solid-js";
 
 export interface I18nContextObject {
   i18n: i18n;
-  ns?: Namespace;
 }
 
 export const I18nContext = createContext<I18nContextObject>();
