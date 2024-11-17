@@ -11,18 +11,9 @@ importers:
       '@solid-primitives/map':
         specifier: ^0.4.13
         version: 0.4.13(solid-js@1.9.2)
-      '@solid-primitives/trigger':
-        specifier: ^1.1.0
-        version: 1.1.0(solid-js@1.9.2)
       html-parse-string:
         specifier: ^0.0.9
         version: 0.0.9
-      i18next:
-        specifier: ^23.16.0
-        version: 23.16.0
-      solid-js:
-        specifier: ^1.9.2
-        version: 1.9.2
     devDependencies:
       '@eslint/js':
         specifier: ^9.13.0
@@ -57,6 +48,9 @@ importers:
       globals:
         specifier: ^15.11.0
         version: 15.11.0
+      i18next:
+        specifier: ^23
+        version: 23.16.5
       i18next-resources-to-backend:
         specifier: ^1.2.1
         version: 1.2.1
@@ -66,6 +60,9 @@ importers:
       prettier:
         specifier: 3.3.3
         version: 3.3.3
+      solid-js:
+        specifier: ^1.2.0
+        version: 1.9.2
       storybook:
         specifier: ^8.4.1
         version: 8.4.1(prettier@3.3.3)
@@ -1235,8 +1232,8 @@ packages:
   i18next-resources-to-backend@1.2.1:
     resolution: {integrity: sha512-okHbVA+HZ7n1/76MsfhPqDou0fptl2dAlhRDu2ideXloRRduzHsqDOznJBef+R3DFZnbvWoBW+KxJ7fnFjd6Yw==}
 
-  i18next@23.16.0:
-    resolution: {integrity: sha512-Ni3CG6c14teOogY19YNRl+kYaE/Rb59khy0VyHVn4uOZ97E2E/Yziyi6r3C3s9+wacjdLZiq/LLYyx+Cgd+FCw==}
+  i18next@23.16.5:
+    resolution: {integrity: sha512-KTlhE3EP9x6pPTAW7dy0WKIhoCpfOGhRQlO+jttQLgzVaoOjWwBWramu7Pp0i+8wDNduuzXfe3kkVbzrKyrbTA==}
 
   iconv-lite@0.6.3:
     resolution: {integrity: sha512-4fCk79wshMdzMp2rH06qWrJE4iolqLhCUH+OiuIgU++RB0+94NlDL81atO7GX55uUKueo0txHNtvEyI6D7WdMw==}
@@ -3073,7 +3070,7 @@ snapshots:
     dependencies:
       '@babel/runtime': 7.25.7
 
-  i18next@23.16.0:
+  i18next@23.16.5:
     dependencies:
       '@babel/runtime': 7.25.7
 

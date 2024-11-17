@@ -26,9 +26,11 @@
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "eslint-plugin-solid": "^0.14.3",
     "globals": "^15.11.0",
+    "i18next": "^23",
     "i18next-resources-to-backend": "^1.2.1",
     "jsdom": "^25.0.1",
     "prettier": "3.3.3",
+    "solid-js": "^1.2.0",
     "storybook": "^8.4.1",
     "typescript": "^5.3.3",
     "typescript-eslint": "^8.12.2",
@@ -38,9 +40,10 @@
   },
   "dependencies": {
     "@solid-primitives/map": "^0.4.13",
-    "@solid-primitives/trigger": "^1.1.0",
-    "html-parse-string": "^0.0.9",
-    "i18next": "^23.16.0",
-    "solid-js": "^1.9.2"
+    "html-parse-string": "^0.0.9"
+  },
+  "peerDependencies": {
+    "i18next": "^23",
+    "solid-js": "^1.2.0"
   }
 }
