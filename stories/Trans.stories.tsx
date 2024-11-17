@@ -1,6 +1,6 @@
 import { type Meta } from "@storybook/html";
 import i18next from "i18next";
-import { createSignal, type JSX } from "solid-js";
+import { createSignal, ParentComponent, type JSX } from "solid-js";
 
 import {
   I18NextProvider,
@@ -405,5 +405,77 @@ export const UseTOptionsExamples = {
 export const TranslationStringBuildAlone = {
   render: () => {
     return <Trans i18nKey="click-here-to-subscribe-buildable" />;
+  },
+};
+
+export const NestedDynamicProps = {
+  render: () => {
+    const Link: ParentComponent<JSX.HTMLAttributes<HTMLAnchorElement>> = (
+      props,
+    ) => {
+      return (
+        <a href="" {...props}>
+          {props.children}
+        </a>
+      );
+    };
+
+    const Box: ParentComponent<JSX.HTMLAttributes<HTMLDivElement>> = (
+      props,
+    ) => {
+      return <div class="my-class" {...props}></div>;
+    };
+
+    return (
+      <Trans
+        i18nKey="bold-italics-underline"
+        dynamic={{
+          1: {
+            component: "div",
+            style: {
+              color: "red",
+            },
+          },
+          3: {
+            component: Link,
+            style: {
+              color: "#4F97A3",
+              "text-decoration": "none",
+            },
+          },
+          6: {
+            component: "b",
+            style: {
+              "font-size": "xx-large",
+            },
+          },
+          7: {
+            component: Box,
+            style: {
+              display: "flex",
+              "flex-direction": "column-reverse",
+            },
+            children: {
+              8: {
+                component: "u",
+              },
+              9: {
+                component: "i",
+                children: {
+                  10: {
+                    component: Box,
+                    style: {
+                      "background-color": "black",
+                      color: "white",
+                      width: "100px",
+                    },
+                  },
+                },
+              },
+            },
+          },
+        }}
+      />
+    );
   },
 };
