@@ -1,4 +1,5 @@
 import { defineConfig } from "tsup";
+import { solidPlugin } from "esbuild-plugin-solid";
 
 export default defineConfig({
   entry: ["src/index.ts"],
@@ -6,4 +7,5 @@ export default defineConfig({
   clean: true,
   dts: true,
   format: ["esm", "cjs"],
+  esbuildPlugins: [solidPlugin()],
 });
