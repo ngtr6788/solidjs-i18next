@@ -1,9 +1,22 @@
 {
   "name": "solidjs-i18next",
-  "type": "module",
   "version": "0.0.0",
   "description": "",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
+    "build": "tsup",
     "storybook": "storybook dev -p 6006",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
@@ -32,6 +45,7 @@
     "prettier": "3.3.3",
     "solid-js": "^1.2.0",
     "storybook": "^8.4.1",
+    "tsup": "^8.3.5",
     "typescript": "^5.3.3",
     "typescript-eslint": "^8.12.2",
     "vite": "^5.0.11",
