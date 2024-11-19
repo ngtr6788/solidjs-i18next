@@ -124,9 +124,11 @@ export const Trans: Component<TransProps> = (props) => {
           const content = interpolate(node.content);
           mem.push(content);
         } else if (node.type === "tag") {
-          const dynNodes = dynamic as {
-            [key: string | number]: TransDynamic<ValidComponent>;
-          };
+          const dynNodes = dynamic as
+            | {
+                [key: string | number]: TransDynamic<ValidComponent>;
+              }
+            | undefined;
           const child =
             dynNodes?.[parseInt(node.name, 10)] ?? dynNodes?.[node.name];
 
