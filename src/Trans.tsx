@@ -6,6 +6,7 @@ import {
   type JSXElement,
   mergeProps,
   Show,
+  splitProps,
   untrack,
   useContext,
   type ValidComponent,
@@ -138,14 +139,14 @@ export const Trans: Component<TransProps> = (props) => {
             );
           } else if (Number.isNaN(parseFloat(node.name))) {
             if (keepArray.includes(node.name)) {
-              const elem = document.createElement(node.name);
-              if (node.voidElement) {
-                mem.push(elem);
-              } else {
-                const childChildren = buildContent(node.children) as Node[];
-                elem.replaceChildren(...childChildren);
-                mem.push(elem);
-              }
+              mem.push(
+                <Dynamic
+                  component={node.name}
+                  children={
+                    node.voidElement ? undefined : buildContent(node.children)
+                  }
+                />,
+              );
             } else if (node.voidElement) {
               mem.push(`<${node.name}></${node.name}>`);
             } else {
@@ -171,7 +172,7 @@ export const Trans: Component<TransProps> = (props) => {
   };
 
   const content = () => {
-    return buildContent(ast()[0].children, props.dynamic);
+    return buildContent(ast()[0]!.children, props.dynamic);
   };
 
   return (
