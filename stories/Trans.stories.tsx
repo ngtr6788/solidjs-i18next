@@ -1,6 +1,6 @@
 import { type Meta } from "@storybook/html";
 import i18next from "i18next";
-import { createSignal, ParentComponent, type JSX } from "solid-js";
+import { createSignal, type JSX, type ParentComponent } from "solid-js";
 
 import {
   I18NextProvider,

@@ -6,7 +6,6 @@ import {
   type JSXElement,
   mergeProps,
   Show,
-  splitProps,
   untrack,
   useContext,
   type ValidComponent,
