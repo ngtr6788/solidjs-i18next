@@ -66,12 +66,12 @@ Return values:
 
 This component is a simple wrapper for the `useTranslation` "hook".
 It takes the same props as the `useTranslation` hook. The child of
-`Translation` takes `t` and `i18n` as arguments and returns JSX,
+`Translation` takes `t`, `i18n`, and `ready` as arguments and returns JSX,
 akin to Solid's `Index` or `For` components' children.
 
 ```
 <Translation>
-  {(t, i18n) => { ... }}
+  {(t, i18n, ready) => { ... }}
 </Translation>
 ```
 
