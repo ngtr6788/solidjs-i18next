@@ -1,10 +1,11 @@
-name: "Run tests"
+name: "Publish"
 
 on:
   - push
 
 jobs:
-  test:
+  publish:
+    name: "Run checks and potentially publish"
     runs-on: ubuntu-latest
 
     steps:
