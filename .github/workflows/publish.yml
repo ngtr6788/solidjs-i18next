@@ -22,5 +22,14 @@ jobs:
           version: 9
           run_install: true
 
+      - name: Type check
+        run: pnpm typecheck
+
+      - name: Lint check
+        run: pnpm lint
+
+      - name: Format check
+        run: pnpm format
+
       - name: Run Tests
         run: pnpm test
