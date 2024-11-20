@@ -423,7 +423,7 @@ export const NestedDynamicProps = {
     const Box: ParentComponent<JSX.HTMLAttributes<HTMLDivElement>> = (
       props,
     ) => {
-      return <div class="my-class" {...props}></div>;
+      return <div class="my-class" {...props} />;
     };
 
     return (
