@@ -40,7 +40,7 @@ const i18nInit = {
         items_ordinal_few: "{{count}}rd item",
         items_ordinal_other: "{{count}}th item",
         "click-here-to-subscribe-buildable":
-          "Click <strong>here</strong> to <i>subscribe</i><br><p>and hit the notification button as well</p>",
+          "Click <strong class='my-class'>here</strong> to <i>subscribe</i><br><p>and hit the notification button as well</p>",
       },
       silly: {
         "click-here-to-subscribe": "<0>SMASH LIKE</0> and <1>SUBSCRIBE</1>",

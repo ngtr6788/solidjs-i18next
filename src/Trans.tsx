@@ -6,6 +6,7 @@ import {
   type JSXElement,
   mergeProps,
   Show,
+  splitProps,
   untrack,
   useContext,
   type ValidComponent,
@@ -131,11 +132,23 @@ export const Trans: Component<TransProps> = (props) => {
           const child =
             dynNodes?.[parseInt(node.name, 10)] ?? dynNodes?.[node.name];
 
+          const nodeAttrs: Record<string, string> = {};
+          for (const attr of node.attrs) {
+            nodeAttrs[attr.name] = attr.value;
+          }
+
           if (child) {
+            const [cc, childProps] = splitProps(child, [
+              "component",
+              "children",
+            ]);
+            const finalProps = mergeProps(nodeAttrs, childProps);
+
             mem.push(
               <Dynamic
-                {...child}
-                children={buildContent(node.children, child.children)}
+                component={cc.component}
+                {...finalProps}
+                children={buildContent(node.children, cc.children)}
               />,
             );
           } else if (Number.isNaN(parseFloat(node.name))) {
@@ -143,6 +156,7 @@ export const Trans: Component<TransProps> = (props) => {
               mem.push(
                 <Dynamic
                   component={node.name}
+                  {...nodeAttrs}
                   children={
                     node.voidElement ? undefined : buildContent(node.children)
                   }
