@@ -23,13 +23,20 @@ jobs:
           run_install: true
 
       - name: Type check
+        if: always()
         run: pnpm typecheck
 
       - name: Lint check
+        if: always()
         run: pnpm lint
 
       - name: Format check
+        if: always()
         run: pnpm format
 
       - name: Run Tests
+        if: always()
         run: pnpm test
+
+      - name: Done with success
+        run: echo "Horray!"
