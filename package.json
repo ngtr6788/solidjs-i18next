@@ -1,7 +1,8 @@
 {
   "name": "solidjs-i18next",
-  "version": "0.0.0",
+  "version": "0.0.0-development",
   "description": "",
+  "repository": "https://github.com/ngtr6788/solidjs-i18next",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
@@ -14,6 +15,10 @@
   },
   "files": [
     "dist"
+  ],
+  "keywords": [
+    "solid-js",
+    "i18next"
   ],
   "scripts": {
     "build": "tsup",
