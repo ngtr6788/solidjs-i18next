@@ -135,13 +135,13 @@ export const ChangeLanguageChangeT = {
     };
 
     createEffect(() => {
-      console.log(i18n.t(keysList[key()]));
+      console.log(i18n.t(keysList[key()]!));
     });
     createEffect(() => {
-      console.log(i18n.t(keysList[key()], { ns: "informal" }));
+      console.log(i18n.t(keysList[key()]!, { ns: "informal" }));
     });
     createEffect(() => {
-      console.log(i18n.t(keysList[key()], { lng: "fr" }));
+      console.log(i18n.t(keysList[key()]!, { lng: "fr" }));
     });
 
     return (
@@ -149,9 +149,9 @@ export const ChangeLanguageChangeT = {
         <button on:click={handleChangeLng}>Change language</button>
         <button on:click={handleChangeKey}>Change key</button>
         <button on:click={handleNamespaces}>Load namespaces</button>
-        <p>{i18n.t(keysList[key()])}</p>
-        <p>{i18n.t(keysList[key()], { ns: "informal" })}</p>
-        <p>{i18n.t(keysList[key()], { lng: "fr" })}</p>
+        <p>{i18n.t(keysList[key()]!)}</p>
+        <p>{i18n.t(keysList[key()]!, { ns: "informal" })}</p>
+        <p>{i18n.t(keysList[key()]!, { lng: "fr" })}</p>
       </>
     ) as Element;
   },
@@ -334,7 +334,7 @@ export const KeyExists = {
         <button on:click={handleChangeKey}>Change key</button>
         <p>
           i18n.exists("{keysList[key()]}"){" "}
-          {String(i18n.exists(keysList[key()]))}
+          {String(i18n.exists(keysList[key()]!))}
         </p>
       </>
     ) as Element;
