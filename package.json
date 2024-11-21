@@ -33,10 +33,13 @@
     "format:fix": "prettier . --write",
     "test:dev": "vitest --watch",
     "test": "vitest --run",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "prepare": "husky"
   },
   "license": "MIT",
   "devDependencies": {
+    "@commitlint/cli": "^19.6.0",
+    "@commitlint/config-conventional": "^19.6.0",
     "@eslint/js": "^9.13.0",
     "@solidjs/testing-library": "^0.8.10",
     "@storybook/html": "^8.4.1",
@@ -49,6 +52,7 @@
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "eslint-plugin-solid": "^0.14.3",
     "globals": "^15.11.0",
+    "husky": "^9.1.7",
     "i18next": "^23",
     "i18next-resources-to-backend": "^1.2.1",
     "jsdom": "^25.0.1",
