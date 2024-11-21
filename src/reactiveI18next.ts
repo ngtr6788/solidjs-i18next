@@ -8,11 +8,8 @@ import {
   useContext,
 } from "solid-js";
 
+import { I18N_LISTENERS, I18N_STORE_LISTENERS } from "./constants";
 import { I18nContext } from "./I18NextProvider";
-
-const I18N_LISTENERS = ["initialized", "languageChanged", "loaded"] as const;
-
-const I18N_STORE_LISTENERS = ["added", "removed"] as const;
 
 export const createReactiveI18n = (
   propI18n?: i18n,

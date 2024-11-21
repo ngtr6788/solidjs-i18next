@@ -10,6 +10,7 @@ import {
   useContext,
 } from "solid-js";
 
+import { I18N_LISTENERS, I18N_STORE_LISTENERS } from "./constants.ts";
 import { I18nContext } from "./I18NextProvider.tsx";
 
 function hasLoadedNamespace(
@@ -30,10 +31,6 @@ export interface UseTranslationOptions {
   ns?: Namespace<string>;
   i18n?: i18n;
 }
-
-const I18N_LISTENERS = ["initialized", "languageChanged", "loaded"] as const;
-
-const I18N_STORE_LISTENERS = ["added", "removed"] as const;
 
 export function useTranslation(
   options: UseTranslationOptions = {},
