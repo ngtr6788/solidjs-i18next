@@ -41,7 +41,7 @@ importers:
         version: 14.5.2(@testing-library/dom@10.4.0)
       esbuild-plugin-solid:
         specifier: ^0.6.0
-        version: 0.6.0(esbuild@0.19.11)(solid-js@1.9.2)
+        version: 0.6.0(esbuild@0.24.0)(solid-js@1.9.2)
       eslint:
         specifier: ^9.13.0
         version: 9.13.0(jiti@1.21.6)
@@ -4970,12 +4970,12 @@ snapshots:
 
   es-module-lexer@1.6.0: {}
 
-  esbuild-plugin-solid@0.6.0(esbuild@0.19.11)(solid-js@1.9.2):
+  esbuild-plugin-solid@0.6.0(esbuild@0.24.0)(solid-js@1.9.2):
     dependencies:
       '@babel/core': 7.23.7
       '@babel/preset-typescript': 7.23.3(@babel/core@7.23.7)
       babel-preset-solid: 1.8.9(@babel/core@7.23.7)
-      esbuild: 0.19.11
+      esbuild: 0.24.0
       solid-js: 1.9.2
     transitivePeerDependencies:
       - supports-color
