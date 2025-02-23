@@ -164,16 +164,11 @@ export const Trans: Component<TransProps> = (props) => {
             } else if (node.voidElement) {
               mem.push(`<${node.name}></${node.name}>`);
             } else {
-              const inner = buildContent(node.children)
-                .map((x) => {
-                  if (x instanceof Element) {
-                    return x.outerHTML;
-                  } else {
-                    return x;
-                  }
-                })
-                .join();
-              mem.push(`<${node.name}>${inner}</${node.name}>`);
+            mem.push(
+              `<${node.name}>`,
+              buildContent(node.children),
+              `</${node.name}>`,
+            );
             }
           } else {
           mem.push(
