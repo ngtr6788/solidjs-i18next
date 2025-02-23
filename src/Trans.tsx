@@ -3,6 +3,7 @@ import type { i18n, TFunction, TOptions, TOptionsBase } from "i18next";
 import i18next from "i18next";
 import {
   type Component,
+  type ComponentProps,
   type JSXElement,
   mergeProps,
   Show,
@@ -11,11 +12,14 @@ import {
   useContext,
   type ValidComponent,
 } from "solid-js";
-import { Dynamic, type DynamicProps } from "solid-js/web";
+import { Dynamic } from "solid-js/web";
 
 import { I18nContext } from "./I18NextProvider.tsx";
 
-export type TransDynamic<T extends ValidComponent> = DynamicProps<T> & {
+export type TransDynamic<T extends ValidComponent, P = ComponentProps<T>> = {
+  [K in keyof P]: P[K];
+} & {
+  component?: T | undefined;
   children?: TransDynamicIndexable;
 };
 
@@ -119,66 +123,71 @@ export const Trans: Component<TransProps> = (props) => {
     dynamic?: TransDynamicIndexable | undefined,
   ): JSXElement[] => {
     return astNodes.reduce((mem, node) => {
-        if (node.type === "text") {
-          const content = interpolate(node.content);
-          mem.push(content);
-        } else if (node.type === "tag") {
-          const dynNodes = dynamic as
-            | {
-                [key: string | number]: TransDynamic<ValidComponent>;
-              }
-            | undefined;
-          const child =
-            dynNodes?.[parseInt(node.name, 10)] ?? dynNodes?.[node.name];
+      if (node.type === "text") {
+        const content = interpolate(node.content);
+        mem.push(content);
+      } else if (node.type === "tag") {
+        const dynNodes = dynamic as
+          | {
+              [key: string | number]: TransDynamic<ValidComponent>;
+            }
+          | undefined;
+        const child =
+          dynNodes?.[parseInt(node.name, 10)] ?? dynNodes?.[node.name];
 
-          const nodeAttrs: Record<string, string> = {};
-          for (const attr of node.attrs) {
-            nodeAttrs[attr.name] = attr.value;
-          }
+        const nodeAttrs: Record<string, string> = {};
+        for (const attr of node.attrs) {
+          nodeAttrs[attr.name] = attr.value;
+        }
 
-          if (child) {
-            const [cc, childProps] = splitProps(child, [
-              "component",
-              "children",
-            ]);
-            const finalProps = mergeProps(nodeAttrs, childProps);
+        if (child) {
+          const [, childProps] = splitProps(child, ["component", "children"]);
+          const finalProps = mergeProps(nodeAttrs, childProps);
 
+          if (child.component) {
             mem.push(
               <Dynamic
-                component={cc.component}
+                component={child.component}
                 {...finalProps}
-                children={buildContent(node.children, cc.children)}
+                children={buildContent(node.children, child.children)}
               />,
             );
-          } else if (Number.isNaN(parseFloat(node.name))) {
-            if (keepArray.includes(node.name)) {
-              mem.push(
-                <Dynamic
-                  component={node.name}
-                  {...nodeAttrs}
-                  children={
-                    node.voidElement ? undefined : buildContent(node.children)
-                  }
-                />,
-              );
-            } else if (node.voidElement) {
-              mem.push(`<${node.name}></${node.name}>`);
-            } else {
+          } else {
+            mem.push(
+              `<${node.name}>`,
+              buildContent(node.children, child.children),
+              `</${node.name}>`,
+            );
+          }
+        } else if (Number.isNaN(parseFloat(node.name))) {
+          if (keepArray.includes(node.name)) {
+            mem.push(
+              <Dynamic
+                component={node.name}
+                {...nodeAttrs}
+                children={
+                  node.voidElement ? undefined : buildContent(node.children)
+                }
+              />,
+            );
+          } else if (node.voidElement) {
+            mem.push(`<${node.name}></${node.name}>`);
+          } else {
             mem.push(
               `<${node.name}>`,
               buildContent(node.children),
               `</${node.name}>`,
             );
-            }
-          } else {
+          }
+        } else {
           mem.push(
             `<${node.name}>`,
             buildContent(node.children),
             `</${node.name}>`,
           );
-          }
         }
-        return mem;
+      }
+      return mem;
     }, [] as JSXElement[]);
   };
 
