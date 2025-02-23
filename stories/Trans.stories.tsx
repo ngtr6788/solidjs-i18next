@@ -43,6 +43,14 @@ const i18nInit = {
         items_ordinal_other: "{{count}}th item",
         "click-here-to-subscribe-buildable":
           "Click <strong class='my-class'>here</strong> to <i>subscribe</i><br><p>and hit the notification button as well</p>",
+        "nested-word-number-tags":
+          "<word>Word tag <0>number 0</0>, <1>number 1</1>, <longer-word>longer word</longer-word></word>",
+        "nested-number-word-tags":
+          "<0>Number tag <word0>word 0</word0>, <word1>word 1</word1>, <1234>longer word</1234></0>",
+        "nested-word-number-tags-with-buildables":
+          "<word>Word tag <0><strong>number</strong> 0</0>, <1><strong>number</strong> 1</1>, <longer-word><strong>longer</strong> word</longer-word></word>",
+        "nested-number-word-tags-with-buildables":
+          "<0>Number tag <word0><strong>word</strong> 0</word0>, <word1><strong>word</strong> 1</word1>, <1234><strong>longer</strong> word</1234></0>",
       },
       silly: {
         "click-here-to-subscribe": "<0>SMASH LIKE</0> and <1>SUBSCRIBE</1>",
@@ -519,6 +527,118 @@ export const PassthroughComponent = {
             children: {
               8: {
                 component: "i",
+              },
+            },
+          },
+        }}
+      />
+    );
+  },
+};
+
+export const PassthroughComponentWithFragment = {
+  render: () => {
+    return (
+      <Trans
+        i18nKey="bold-italics-underline"
+        dynamic={{
+          7: {
+            component: (props) => <>{props.children}</>,
+            children: {
+              8: {
+                component: "i",
+              },
+            },
+          },
+        }}
+      />
+    );
+  },
+};
+
+export const NestedWordNumberTags = {
+  render: () => {
+    return (
+      <Trans
+        i18nKey="nested-word-number-tags"
+        dynamic={{
+          word: {
+            component: undefined,
+            children: {
+              1: {
+                component: "i",
+              },
+              "longer-word": {
+                component: "u",
+              },
+            },
+          },
+        }}
+      />
+    );
+  },
+};
+
+export const NestedNumberWordTags = {
+  render: () => {
+    return (
+      <Trans
+        i18nKey="nested-number-word-tags"
+        dynamic={{
+          0: {
+            component: undefined,
+            children: {
+              word0: {
+                component: "i",
+              },
+              1234: {
+                component: "u",
+              },
+            },
+          },
+        }}
+      />
+    );
+  },
+};
+
+export const NestedWordNumberTagsWithBuildables = {
+  render: () => {
+    return (
+      <Trans
+        i18nKey="nested-word-number-tags-with-buildables"
+        dynamic={{
+          word: {
+            component: undefined,
+            children: {
+              1: {
+                component: "i",
+              },
+              "longer-word": {
+                component: "u",
+              },
+            },
+          },
+        }}
+      />
+    );
+  },
+};
+
+export const NestedNumberWordTagsWithBuildables = {
+  render: () => {
+    return (
+      <Trans
+        i18nKey="nested-number-word-tags-with-buildables"
+        dynamic={{
+          0: {
+            component: undefined,
+            children: {
+              word0: {
+                component: "i",
+              },
+              1234: {
+                component: "u",
               },
             },
           },
