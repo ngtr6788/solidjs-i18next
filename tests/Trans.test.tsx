@@ -1,5 +1,6 @@
 import { render } from "@solidjs/testing-library";
 import userEvent from "@testing-library/user-event";
+import escape from "escape-html";
 import i18next from "i18next";
 import { createSignal, type JSX, type ParentComponent } from "solid-js";
 import { describe, expect, test } from "vitest";
@@ -38,6 +39,14 @@ const i18nInit = {
         items_ordinal_other: "{{count}}th item",
         "click-here-to-subscribe-buildable":
           "Click <strong class='my-class'>here</strong> to <i>subscribe</i><br><p>and hit the notification button as well</p>",
+        "nested-word-number-tags":
+          "<word>Word tag <0>number 0</0>, <1>number 1</1>, <longer-word>longer word</longer-word></word>",
+        "nested-number-word-tags":
+          "<0>Number tag <word0>word 0</word0>, <word1>word 1</word1>, <1234>longer number</1234></0>",
+        "nested-word-buildable-tags":
+          "<word>Word tag <strong>STRONG</strong>, <i>italics</i>, <p>paragraph</p></word>",
+        "nested-number-buildable-tags":
+          "<0>Number tag <strong>STRONG</strong>, <i>italics</i>, <p>paragraph</p></0>",
       },
       silly: {
         "click-here-to-subscribe": "<0>SMASH LIKE</0> and <1>SUBSCRIBE</1>",
@@ -288,6 +297,98 @@ describe("Trans component tests", () => {
       await user.click(screen.getByText("Toggle component array"));
       expect(screen.getByText(textWithTags)).toBeInTheDocument();
       expect(screen.queryByText(textWithoutTags)).not.toBeInTheDocument();
+    });
+
+    test("undefined component for word tag, nested number tags", () => {
+      const Link: ParentComponent<JSX.HTMLAttributes<HTMLAnchorElement>> = (
+        props,
+      ) => {
+        return (
+          <a href="" {...props}>
+            {props.children}
+          </a>
+        );
+      };
+
+      const Test = () => {
+        return (
+          <Trans
+            i18nKey="nested-word-number-tags"
+            dynamic={{
+              word: {
+                children: {
+                  0: {
+                    component: Link,
+                  },
+                  "longer-word": {
+                    component: "u",
+                  },
+                },
+              },
+            }}
+          />
+        );
+      };
+
+      const screen = render(() => <Test />, {});
+      expect(screen.container.innerHTML).toEqual(
+        `${escape("<word>")}Word tag <a href="">number 0</a>, ${escape("<1>")}number 1${escape("</1>")}, <u>longer word</u>${escape("</word>")}`,
+      );
+    });
+
+    test("undefined component for number tag, nested word tags", () => {
+      const Header: ParentComponent<JSX.HTMLAttributes<HTMLAnchorElement>> = (
+        props,
+      ) => {
+        return <h1>{props.children}</h1>;
+      };
+
+      const Test = () => {
+        return (
+          <Trans
+            i18nKey="nested-number-word-tags"
+            dynamic={{
+              0: {
+                children: {
+                  word0: {
+                    component: "u",
+                  },
+                  1234: {
+                    component: Header,
+                  },
+                },
+              },
+            }}
+          />
+        );
+      };
+
+      const screen = render(() => <Test />, {});
+      expect(screen.container.innerHTML).toEqual(
+        `${escape("<0>")}Number tag <u>word 0</u>, ${escape("<word1>")}word 1${escape("</word1>")}, <h1>longer number</h1>${escape("</0>")}`,
+      );
+    });
+
+    test("undefined component for word tag, nested number + buildable tags", () => {
+      const Test = () => {
+        return <Trans i18nKey="nested-word-buildable-tags" dynamic={{}} />;
+      };
+
+      const screen = render(() => <Test />, {});
+      expect(screen.container.innerHTML).toEqual(
+        `${escape("<word>")}Word tag <strong>STRONG</strong>, <i>italics</i>, <p>paragraph</p>${escape("</word>")}`,
+      );
+    });
+
+    test("undefined component for number tag, nested word + buildable tags", () => {
+      const Test = () => {
+        return <Trans i18nKey="nested-number-buildable-tags" dynamic={{}} />;
+      };
+
+      const screen = render(() => <Test />, {});
+      expect(screen.container.innerHTML).toEqual(
+        `${escape("<0>")}Number tag <strong>STRONG</strong>, <i>italics</i>, <p>paragraph</p>${escape("</0>")}`,
+      );
     });
   });
 });
