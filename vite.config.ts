@@ -7,6 +7,11 @@ export default defineConfig({
     target: "esnext",
   },
   test: {
+    coverage: {
+      enabled: true,
+      include: ["src/**/*.{ts,tsx}"],
+      reporter: ['html'],
+    },
     setupFiles: ["./tests/vitest.setup.ts"],
     server: {
       deps: {
