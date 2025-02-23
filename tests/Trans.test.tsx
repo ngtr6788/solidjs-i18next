@@ -209,7 +209,7 @@ describe("Trans component tests", () => {
       );
     });
 
-    test("defined and undefined dynamic object", async () => {
+    test("defined and undefined dynamic object with number tags", async () => {
       const user = userEvent.setup();
       const Test = () => {
         const name = "Jane";
@@ -246,8 +246,48 @@ describe("Trans component tests", () => {
       expect(screen.queryByText(textWithoutTags)).not.toBeInTheDocument();
 
       await user.click(screen.getByText("Toggle component array"));
-      expect(screen.getByText(textWithoutTags)).toBeInTheDocument();
-      expect(screen.queryByText(textWithTags)).not.toBeInTheDocument();
+      expect(screen.getByText(textWithTags)).toBeInTheDocument();
+      expect(screen.queryByText(textWithoutTags)).not.toBeInTheDocument();
+    });
+
+    test("defined and undefined dynamic object with word tags", async () => {
+      const user = userEvent.setup();
+      const Test = () => {
+        const name = "Jane";
+        const numEmails = 456;
+
+        const [comps, setComps] = createSignal<
+          TransDynamicIndexable | undefined
+        >(undefined);
+
+        const toggleComponentArray = () => {
+          setComps((comps) => (comps === undefined ? [] : undefined));
+        };
+
+        return (
+          <div>
+            <button on:click={toggleComponentArray}>
+              Toggle component array
+            </button>
+            <Trans
+              i18nKey="to-learn-more-click-here"
+              values={{ name, numEmails }}
+              dynamic={comps()}
+            />
+          </div>
+        );
+      };
+
+      const textWithTags =
+        "To learn <italics>a whole lot</italics> more, click <CustomLink>here</CustomLink>";
+      const textWithoutTags = "To learn a whole lot more, click here";
+      const screen = render(() => <Test />, {});
+      expect(screen.getByText(textWithTags)).toBeInTheDocument();
+      expect(screen.queryByText(textWithoutTags)).not.toBeInTheDocument();
+
+      await user.click(screen.getByText("Toggle component array"));
+      expect(screen.getByText(textWithTags)).toBeInTheDocument();
+      expect(screen.queryByText(textWithoutTags)).not.toBeInTheDocument();
     });
   });
 });
