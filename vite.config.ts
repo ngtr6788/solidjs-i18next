@@ -10,7 +10,7 @@ export default defineConfig({
     coverage: {
       enabled: true,
       include: ["src/**/*.{ts,tsx}"],
-      reporter: ['html'],
+      reporter: ["html"],
     },
     setupFiles: ["./tests/vitest.setup.ts"],
     server: {
