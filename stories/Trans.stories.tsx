@@ -3,6 +3,7 @@ import i18next from "i18next";
 import { createSignal, type JSX, type ParentComponent } from "solid-js";
 
 import {
+  Fragment,
   I18NextProvider,
   Trans,
   type TransDynamicIndexable,
@@ -516,7 +517,7 @@ export const WordAndNumberTag = {
   },
 };
 
-export const PassthroughComponent = {
+export const UndefinedComponent = {
   render: () => {
     return (
       <Trans
@@ -536,14 +537,14 @@ export const PassthroughComponent = {
   },
 };
 
-export const PassthroughComponentWithFragment = {
+export const FragmentComponent = {
   render: () => {
     return (
       <Trans
         i18nKey="bold-italics-underline"
         dynamic={{
           7: {
-            component: (props) => <>{props.children}</>,
+            component: Fragment,
             children: {
               8: {
                 component: "i",
@@ -639,6 +640,33 @@ export const NestedNumberWordTagsWithBuildables = {
               },
               1234: {
                 component: "u",
+              },
+            },
+          },
+        }}
+      />
+    );
+  },
+};
+
+export const FragmentInNestedDynamicProps = {
+  render: () => {
+    return (
+      <Trans
+        i18nKey="bold-italics-underline"
+        dynamic={{
+          3: {
+            component: Fragment,
+          },
+          7: {
+            component: Fragment,
+            children: {
+              9: {
+                children: {
+                  10: {
+                    component: Fragment,
+                  },
+                },
               },
             },
           },
