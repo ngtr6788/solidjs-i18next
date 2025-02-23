@@ -117,9 +117,8 @@ export const Trans: Component<TransProps> = (props) => {
   const buildContent = (
     astNodes: IDom[],
     dynamic?: TransDynamicIndexable | undefined,
-  ) => {
-    return astNodes.reduce(
-      (mem, node) => {
+  ): JSXElement[] => {
+    return astNodes.reduce((mem, node) => {
         if (node.type === "text") {
           const content = interpolate(node.content);
           mem.push(content);
@@ -177,13 +176,15 @@ export const Trans: Component<TransProps> = (props) => {
               mem.push(`<${node.name}>${inner}</${node.name}>`);
             }
           } else {
-            mem.push(buildContent(node.children));
+          mem.push(
+            `<${node.name}>`,
+            buildContent(node.children),
+            `</${node.name}>`,
+          );
           }
         }
         return mem;
-      },
-      [] as (string | JSXElement)[],
-    );
+    }, [] as JSXElement[]);
   };
 
   const content = () => {
