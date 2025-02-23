@@ -1,11 +1,10 @@
 import { render } from "@solidjs/testing-library";
+import userEvent from "@testing-library/user-event";
 import i18next from "i18next";
-import { type JSX, type ParentComponent } from "solid-js";
-// import userEvent from "@testing-library/user-event";
+import { createSignal, type JSX, type ParentComponent } from "solid-js";
 import { describe, expect, test } from "vitest";
 
-// const user = userEvent.setup();
-import { Trans } from "../src";
+import { Trans, type TransDynamicIndexable } from "../src";
 
 const i18nInit = {
   resources: {
@@ -23,9 +22,9 @@ const i18nInit = {
         "bold-italics-underline":
           "Number <1>one</1>, number <3>three</3>, number <6>six</6>, number <7>seven, <8>eight</8>, <9>nine, <10>ten</10></9></7>",
         "hello-name-have-number":
-          "Hello {{name}}, you have {{numEmails}} unread emails today.",
+          "<0>Hello {{name}}</0>, you have <1>{{numEmails}} unread emails</1> today.",
         "greetings-name-number":
-          "You, there, currently have {{numEmails}} letters in the mail, {{name}}",
+          "You, there, currently have <1>{{numEmails}} letters</1> in the mail, <0>{{name}}</0>",
         actors_male_zero: "No actors",
         actors_male_one: "{{count}} actors",
         actors_male_other: "{{count}} actors",
@@ -181,6 +180,74 @@ describe("Trans component tests", () => {
 
       const screen = render(() => <Test />, {});
       expect(screen.container.innerHTML).toMatchSnapshot();
+    });
+
+    test("value interpolation with component interpolation", () => {
+      const Test = () => {
+        const name = "John";
+        const numEmails = 123;
+
+        return (
+          <Trans
+            i18nKey="hello-name-have-number"
+            values={{ name, numEmails }}
+            dynamic={[
+              {
+                component: "bold",
+              },
+              {
+                component: "i",
+              },
+            ]}
+          />
+        );
+      };
+
+      const screen = render(() => <Test />, {});
+      expect(screen.container.innerHTML).toEqual(
+        "<bold>Hello John</bold>, you have <i>123 unread emails</i> today.",
+      );
+    });
+
+    test("defined and undefined dynamic object", async () => {
+      const user = userEvent.setup();
+      const Test = () => {
+        const name = "Jane";
+        const numEmails = 456;
+
+        const [comps, setComps] = createSignal<
+          TransDynamicIndexable | undefined
+        >(undefined);
+
+        const toggleComponentArray = () => {
+          setComps((comps) => (comps === undefined ? [] : undefined));
+        };
+
+        return (
+          <div>
+            <button on:click={toggleComponentArray}>
+              Toggle component array
+            </button>
+            <Trans
+              i18nKey="greetings-name-number"
+              values={{ name, numEmails }}
+              dynamic={comps()}
+            />
+          </div>
+        );
+      };
+
+      const textWithTags =
+        "You, there, currently have <1>456 letters</1> in the mail, <0>Jane</0>";
+      const textWithoutTags =
+        "You, there, currently have 456 letters in the mail, Jane";
+      const screen = render(() => <Test />, {});
+      expect(screen.getByText(textWithTags)).toBeInTheDocument();
+      expect(screen.queryByText(textWithoutTags)).not.toBeInTheDocument();
+
+      await user.click(screen.getByText("Toggle component array"));
+      expect(screen.getByText(textWithoutTags)).toBeInTheDocument();
+      expect(screen.queryByText(textWithTags)).not.toBeInTheDocument();
     });
   });
 });
