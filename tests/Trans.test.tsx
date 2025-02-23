@@ -5,7 +5,7 @@ import i18next from "i18next";
 import { createSignal, type JSX, type ParentComponent } from "solid-js";
 import { describe, expect, test } from "vitest";
 
-import { Trans, type TransDynamicIndexable } from "../src";
+import { Fragment, Trans, type TransDynamicIndexable } from "../src";
 
 const i18nInit = {
   resources: {
@@ -388,6 +388,38 @@ describe("Trans component tests", () => {
       const screen = render(() => <Test />, {});
       expect(screen.container.innerHTML).toEqual(
         `${escape("<0>")}Number tag <strong>STRONG</strong>, <i>italics</i>, <p>paragraph</p>${escape("</0>")}`,
+      );
+    });
+
+    test("fragment component in various slot tags", () => {
+      const Test = () => {
+        return (
+          <Trans
+            i18nKey="bold-italics-underline"
+            dynamic={{
+              3: {
+                component: Fragment,
+              },
+              7: {
+                component: Fragment,
+                children: {
+                  9: {
+                    children: {
+                      10: {
+                        component: Fragment,
+                      },
+                    },
+                  },
+                },
+              },
+            }}
+          />
+        );
+      };
+
+      const screen = render(() => <Test />, {});
+      expect(screen.container.innerHTML).toEqual(
+        `Number ${escape("<1>one</1>")}, number three, number ${escape("<6>six</6>")}, number seven, ${escape("<8>eight</8>")}, ${escape("<9>")}nine, ten${escape("</9>")}`,
       );
     });
   });
