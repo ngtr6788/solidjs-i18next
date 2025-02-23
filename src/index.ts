@@ -1,3 +1,4 @@
+export * from "./Fragment.tsx";
 export * from "./I18NextProvider.tsx";
 export * from "./reactiveI18next.ts";
 export * from "./Trans.tsx";
