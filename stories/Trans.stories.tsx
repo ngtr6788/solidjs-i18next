@@ -28,6 +28,8 @@ const i18nInit = {
           "Hello {{name}}, you have {{numEmails}} unread emails today.",
         "greetings-name-number":
           "You, there, currently have {{numEmails}} letters in the mail, {{name}}",
+        "combined-text-and-number-tags":
+          "<word>Word tag</word><0>Number tag</0>",
         actors_male_zero: "No actors",
         actors_male_one: "{{count}} actors",
         actors_male_other: "{{count}} actors",
@@ -471,6 +473,52 @@ export const NestedDynamicProps = {
                     },
                   },
                 },
+              },
+            },
+          },
+        }}
+      />
+    );
+  },
+};
+
+export const WordAndNumberTag = {
+  render: () => {
+    const [comps, setComps] = createSignal<TransDynamicIndexable | undefined>(
+      undefined,
+    );
+
+    const toggleComponentArray = () => {
+      setComps((comps) => (comps === undefined ? [] : undefined));
+    };
+
+    return (
+      <>
+        <button on:click={toggleComponentArray}>
+          Toggle empty component array
+        </button>
+        <div>
+          <Trans i18nKey="combined-text-and-number-tags" dynamic={comps()} />
+        </div>
+        <div>
+          <Trans i18nKey="to-learn-more-click-here" dynamic={comps()} />
+        </div>
+      </>
+    );
+  },
+};
+
+export const PassthroughComponent = {
+  render: () => {
+    return (
+      <Trans
+        i18nKey="bold-italics-underline"
+        dynamic={{
+          7: {
+            component: undefined,
+            children: {
+              8: {
+                component: "i",
               },
             },
           },
