@@ -5,7 +5,7 @@ import i18next from "i18next";
 import { createSignal, type JSX, type ParentComponent } from "solid-js";
 import { describe, expect, test } from "vitest";
 
-import { Fragment, Trans, type TransDynamicIndexable } from "../src";
+import { Fragment, Trans, type TransDynamicBasicChildren } from "../src";
 
 const i18nInit = {
   resources: {
@@ -69,7 +69,7 @@ describe("Trans component tests", () => {
         return (
           <Trans
             i18nKey="click-here-to-subscribe"
-            dynamic={[{ component: "a", href: "" }, { component: "b" }]}
+            dynamic={{ 0: { component: "a", href: "" }, 1: { component: "b" } }}
           />
         );
       };
@@ -200,14 +200,14 @@ describe("Trans component tests", () => {
           <Trans
             i18nKey="hello-name-have-number"
             values={{ name, numEmails }}
-            dynamic={[
-              {
+            dynamic={{
+              0: {
                 component: "bold",
               },
-              {
+              1: {
                 component: "i",
               },
-            ]}
+            }}
           />
         );
       };
@@ -225,11 +225,11 @@ describe("Trans component tests", () => {
         const numEmails = 456;
 
         const [comps, setComps] = createSignal<
-          TransDynamicIndexable | undefined
+          TransDynamicBasicChildren | undefined
         >(undefined);
 
         const toggleComponentArray = () => {
-          setComps((comps) => (comps === undefined ? [] : undefined));
+          setComps((comps) => (comps === undefined ? {} : undefined));
         };
 
         return (
@@ -266,11 +266,11 @@ describe("Trans component tests", () => {
         const numEmails = 456;
 
         const [comps, setComps] = createSignal<
-          TransDynamicIndexable | undefined
+          TransDynamicBasicChildren | undefined
         >(undefined);
 
         const toggleComponentArray = () => {
-          setComps((comps) => (comps === undefined ? [] : undefined));
+          setComps((comps) => (comps === undefined ? {} : undefined));
         };
 
         return (

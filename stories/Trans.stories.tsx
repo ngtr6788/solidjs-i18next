@@ -6,7 +6,7 @@ import {
   Fragment,
   I18NextProvider,
   Trans,
-  type TransDynamicIndexable,
+  type TransDynamicBasicChildren,
   useTranslation,
 } from "../src";
 
@@ -88,7 +88,7 @@ export const ComponentsArray = {
     return (
       <Trans
         i18nKey="click-here-to-subscribe"
-        dynamic={[{ component: "a", href: "" }, { component: "b" }]}
+        dynamic={{ 0: { component: "a", href: "" }, 1: { component: "b" } }}
       />
     );
   },
@@ -155,9 +155,9 @@ export const TranslationsWithAndWithoutInterpolation = {
     const numEmails = 103;
 
     const [i18nKey, setI18nKey] = createSignal("bold-italics-underline");
-    const [comps, setComps] = createSignal<TransDynamicIndexable | undefined>(
-      undefined,
-    );
+    const [comps, setComps] = createSignal<
+      TransDynamicBasicChildren | undefined
+    >(undefined);
 
     const setBoldItalicsUnderline = () => {
       setI18nKey("bold-italics-underline");
@@ -168,7 +168,7 @@ export const TranslationsWithAndWithoutInterpolation = {
     };
 
     const toggleComponentArray = () => {
-      setComps((comps) => (comps === undefined ? [] : undefined));
+      setComps((comps) => (comps === undefined ? {} : undefined));
     };
 
     return (
@@ -351,7 +351,7 @@ export const ChangeNamespace = {
         <Trans
           i18nKey="click-here-to-subscribe"
           ns={ns()}
-          dynamic={[{ component: "a", href: "" }, { component: "b" }]}
+          dynamic={{ 0: { component: "a", href: "" }, 1: { component: "b" } }}
         />
       </>
     );
@@ -375,7 +375,7 @@ export const ChangeLanguageWithI18n = {
           <Trans
             t={t}
             i18nKey="click-here-to-subscribe"
-            dynamic={[{ component: "a", href: "" }, { component: "b" }]}
+            dynamic={{ 0: { component: "a", href: "" }, 1: { component: "b" } }}
           />
         </p>
       </>
@@ -493,12 +493,12 @@ export const NestedDynamicProps = {
 
 export const WordAndNumberTag = {
   render: () => {
-    const [comps, setComps] = createSignal<TransDynamicIndexable | undefined>(
-      undefined,
-    );
+    const [comps, setComps] = createSignal<
+      TransDynamicBasicChildren | undefined
+    >(undefined);
 
     const toggleComponentArray = () => {
-      setComps((comps) => (comps === undefined ? [] : undefined));
+      setComps((comps) => (comps === undefined ? {} : undefined));
     };
 
     return (

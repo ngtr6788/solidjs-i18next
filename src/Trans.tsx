@@ -3,7 +3,6 @@ import type { i18n, TFunction, TOptions, TOptionsBase } from "i18next";
 import i18next from "i18next";
 import {
   type Component,
-  type ComponentProps,
   type JSXElement,
   mergeProps,
   Show,
@@ -16,18 +15,14 @@ import { Dynamic } from "solid-js/web";
 
 import { I18nContext } from "./I18NextProvider.tsx";
 
-export type TransDynamic<T extends ValidComponent, P = ComponentProps<T>> = {
-  [K in keyof P]: P[K];
-} & {
-  component?: T | undefined;
-  children?: TransDynamicIndexable;
-};
+export interface TransDynamicBasicNode extends Record<string, unknown> {
+  component?: ValidComponent;
+  children?: TransDynamicBasicChildren;
+}
 
-export type TransDynamicIndexable =
-  | Array<TransDynamic<ValidComponent>>
-  | {
-      [key: string | number]: TransDynamic<ValidComponent>;
-    };
+export type TransDynamicBasicChildren = {
+  [key: string]: TransDynamicBasicNode;
+};
 
 export interface TransProps {
   i18nKey?: string;
@@ -41,7 +36,7 @@ export interface TransProps {
   values?: Record<string, unknown>;
 
   /* Use the HTMLs and Components thing */
-  dynamic?: TransDynamicIndexable;
+  dynamic?: TransDynamicBasicChildren;
 
   /* Use custom t or i18n */
   t?: TFunction;
@@ -120,20 +115,15 @@ export const Trans: Component<TransProps> = (props) => {
 
   const buildContent = (
     astNodes: IDom[],
-    dynamic?: TransDynamicIndexable | undefined,
+    dynamic?: TransDynamicBasicChildren | undefined,
   ): JSXElement[] => {
     return astNodes.reduce((mem, node) => {
       if (node.type === "text") {
         const content = interpolate(node.content);
         mem.push(content);
       } else if (node.type === "tag") {
-        const dynNodes = dynamic as
-          | {
-              [key: string | number]: TransDynamic<ValidComponent>;
-            }
-          | undefined;
         const child =
-          dynNodes?.[parseInt(node.name, 10)] ?? dynNodes?.[node.name];
+          dynamic?.[parseInt(node.name, 10)] ?? dynamic?.[node.name];
 
         const nodeAttrs: Record<string, string> = {};
         for (const attr of node.attrs) {
