@@ -73,15 +73,10 @@
   },
   "dependencies": {
     "@solid-primitives/map": "^0.4.13",
-    "html-parse-stringify": "^3.0.1"
+    "html-parse-string": "^0.0.9"
   },
   "peerDependencies": {
     "i18next": "^23",
     "solid-js": "^1.2.0"
-  },
-  "pnpm": {
-    "patchedDependencies": {
-      "html-parse-stringify": "patches/html-parse-stringify.patch"
-    }
   }
 }
