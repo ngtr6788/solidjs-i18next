@@ -3,10 +3,10 @@ import type { i18n, TFunction, TOptions, TOptionsBase } from "i18next";
 import i18next from "i18next";
 import {
   type Component,
+  type ComponentProps,
   type JSXElement,
   mergeProps,
   Show,
-  splitProps,
   untrack,
   useContext,
   type ValidComponent,
@@ -15,14 +15,44 @@ import { Dynamic } from "solid-js/web";
 
 import { I18nContext } from "./I18NextProvider.tsx";
 
-export interface TransDynamicBasicNode extends Record<string, unknown> {
+export interface TransDynamicBasicNode {
   component?: ValidComponent;
-  children?: TransDynamicBasicChildren;
+  props?: Record<string, unknown>;
+  children?: Record<string, TransDynamicBasicNode>;
 }
 
-export type TransDynamicBasicChildren = {
-  [key: string]: TransDynamicBasicNode;
-};
+export interface TransDynamicValidComponentNode<
+  TComponent extends ValidComponent,
+> extends TransDynamicBasicNode {
+  component: TComponent;
+  props: Omit<ComponentProps<TComponent>, "children">;
+}
+
+export interface TransDynamicEmptyComponentNode extends TransDynamicBasicNode {
+  component?: undefined;
+  props?: never;
+}
+
+export type TransDynamicNode<TComponent extends ValidComponent | undefined> =
+  TComponent extends undefined
+    ? TransDynamicEmptyComponentNode
+    : TComponent extends ValidComponent
+      ? TransDynamicValidComponentNode<TComponent>
+      : never;
+
+export function transDynamicNode<TComponent extends ValidComponent>(
+  node: TransDynamicValidComponentNode<TComponent>,
+): TransDynamicValidComponentNode<TComponent>;
+
+export function transDynamicNode(
+  node: TransDynamicEmptyComponentNode,
+): TransDynamicEmptyComponentNode;
+
+export function transDynamicNode<TComponent extends ValidComponent | undefined>(
+  node: TransDynamicNode<TComponent>,
+) {
+  return node;
+}
 
 export interface TransProps {
   i18nKey?: string;
@@ -36,7 +66,7 @@ export interface TransProps {
   values?: Record<string, unknown>;
 
   /* Use the HTMLs and Components thing */
-  dynamic?: TransDynamicBasicChildren;
+  dynamic?: Record<string, TransDynamicBasicNode>;
 
   /* Use custom t or i18n */
   t?: TFunction;
@@ -115,7 +145,7 @@ export const Trans: Component<TransProps> = (props) => {
 
   const buildContent = (
     astNodes: IDom[],
-    dynamic?: TransDynamicBasicChildren | undefined,
+    dynamic?: Record<string, TransDynamicBasicNode> | undefined,
   ): JSXElement[] => {
     return astNodes.reduce((mem, node) => {
       if (node.type === "text") {
@@ -131,10 +161,8 @@ export const Trans: Component<TransProps> = (props) => {
         }
 
         if (child) {
-          const [, childProps] = splitProps(child, ["component", "children"]);
-          const finalProps = mergeProps(nodeAttrs, childProps);
-
           if (child.component) {
+            const finalProps = mergeProps(nodeAttrs, child.props);
             mem.push(
               <Dynamic
                 component={child.component}

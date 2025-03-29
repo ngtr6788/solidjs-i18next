@@ -5,7 +5,12 @@ import i18next from "i18next";
 import { createSignal, type JSX, type ParentComponent } from "solid-js";
 import { describe, expect, test } from "vitest";
 
-import { Fragment, Trans, type TransDynamicBasicChildren } from "../src";
+import {
+  Fragment,
+  Trans,
+  type TransDynamicBasicNode,
+  transDynamicNode,
+} from "../src";
 
 const i18nInit = {
   resources: {
@@ -69,7 +74,10 @@ describe("Trans component tests", () => {
         return (
           <Trans
             i18nKey="click-here-to-subscribe"
-            dynamic={{ 0: { component: "a", href: "" }, 1: { component: "b" } }}
+            dynamic={{
+              0: transDynamicNode({ component: "a", props: { href: "" } }),
+              1: transDynamicNode({ component: "b", props: {} }),
+            }}
           />
         );
       };
@@ -87,13 +95,16 @@ describe("Trans component tests", () => {
           <Trans
             i18nKey="to-learn-more-click-here"
             dynamic={{
-              italics: {
+              italics: transDynamicNode({
                 component: "i",
-              },
-              CustomLink: {
+                props: {},
+              }),
+              CustomLink: transDynamicNode({
                 component: "a",
-                href: "",
-              },
+                props: {
+                  href: "",
+                },
+              }),
             }}
           />
         );
@@ -140,28 +151,36 @@ describe("Trans component tests", () => {
             dynamic={{
               1: {
                 component: "div",
-                style: {
-                  color: "red",
+                props: {
+                  style: {
+                    color: "red",
+                  },
                 },
               },
               3: {
                 component: Link,
-                style: {
-                  color: "#4F97A3",
-                  "text-decoration": "none",
+                props: {
+                  style: {
+                    color: "#4F97A3",
+                    "text-decoration": "none",
+                  },
                 },
               },
               6: {
                 component: "b",
-                style: {
-                  "font-size": "xx-large",
+                props: {
+                  style: {
+                    "font-size": "xx-large",
+                  },
                 },
               },
               7: {
                 component: Box,
-                style: {
-                  display: "flex",
-                  "flex-direction": "column-reverse",
+                props: {
+                  style: {
+                    display: "flex",
+                    "flex-direction": "column-reverse",
+                  },
                 },
                 children: {
                   8: {
@@ -172,10 +191,12 @@ describe("Trans component tests", () => {
                     children: {
                       10: {
                         component: Box,
-                        style: {
-                          "background-color": "black",
-                          color: "white",
-                          width: "100px",
+                        props: {
+                          style: {
+                            "background-color": "black",
+                            color: "white",
+                            width: "100px",
+                          },
                         },
                       },
                     },
@@ -225,7 +246,7 @@ describe("Trans component tests", () => {
         const numEmails = 456;
 
         const [comps, setComps] = createSignal<
-          TransDynamicBasicChildren | undefined
+          Record<string, TransDynamicBasicNode> | undefined
         >(undefined);
 
         const toggleComponentArray = () => {
@@ -266,7 +287,7 @@ describe("Trans component tests", () => {
         const numEmails = 456;
 
         const [comps, setComps] = createSignal<
-          TransDynamicBasicChildren | undefined
+          Record<string, TransDynamicBasicNode> | undefined
         >(undefined);
 
         const toggleComponentArray = () => {
@@ -348,16 +369,18 @@ describe("Trans component tests", () => {
           <Trans
             i18nKey="nested-number-word-tags"
             dynamic={{
-              0: {
+              0: transDynamicNode({
                 children: {
-                  word0: {
+                  word0: transDynamicNode({
                     component: "u",
-                  },
-                  1234: {
+                    props: {},
+                  }),
+                  1234: transDynamicNode({
                     component: Header,
-                  },
+                    props: {},
+                  }),
                 },
-              },
+              }),
             }}
           />
         );
@@ -397,21 +420,24 @@ describe("Trans component tests", () => {
           <Trans
             i18nKey="bold-italics-underline"
             dynamic={{
-              3: {
+              3: transDynamicNode({
                 component: Fragment,
-              },
-              7: {
+                props: {},
+              }),
+              7: transDynamicNode({
                 component: Fragment,
+                props: {},
                 children: {
-                  9: {
+                  9: transDynamicNode({
                     children: {
-                      10: {
+                      10: transDynamicNode({
                         component: Fragment,
-                      },
+                        props: {},
+                      }),
                     },
-                  },
+                  }),
                 },
-              },
+              }),
             }}
           />
         );

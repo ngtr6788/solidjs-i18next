@@ -6,7 +6,7 @@ import {
   Fragment,
   I18NextProvider,
   Trans,
-  type TransDynamicBasicChildren,
+  type TransDynamicBasicNode,
   useTranslation,
 } from "../src";
 
@@ -88,7 +88,10 @@ export const ComponentsArray = {
     return (
       <Trans
         i18nKey="click-here-to-subscribe"
-        dynamic={{ 0: { component: "a", href: "" }, 1: { component: "b" } }}
+        dynamic={{
+          0: { component: "a", props: { href: "" } },
+          1: { component: "b" },
+        }}
       />
     );
   },
@@ -105,7 +108,9 @@ export const ComponentsObject = {
           },
           CustomLink: {
             component: "a",
-            href: "",
+            props: {
+              href: "",
+            },
           },
         }}
       />
@@ -156,7 +161,7 @@ export const TranslationsWithAndWithoutInterpolation = {
 
     const [i18nKey, setI18nKey] = createSignal("bold-italics-underline");
     const [comps, setComps] = createSignal<
-      TransDynamicBasicChildren | undefined
+      Record<string, TransDynamicBasicNode> | undefined
     >(undefined);
 
     const setBoldItalicsUnderline = () => {
@@ -351,7 +356,10 @@ export const ChangeNamespace = {
         <Trans
           i18nKey="click-here-to-subscribe"
           ns={ns()}
-          dynamic={{ 0: { component: "a", href: "" }, 1: { component: "b" } }}
+          dynamic={{
+            0: { component: "a", props: { href: "" } },
+            1: { component: "b" },
+          }}
         />
       </>
     );
@@ -375,7 +383,10 @@ export const ChangeLanguageWithI18n = {
           <Trans
             t={t}
             i18nKey="click-here-to-subscribe"
-            dynamic={{ 0: { component: "a", href: "" }, 1: { component: "b" } }}
+            dynamic={{
+              0: { component: "a", props: { href: "" } },
+              1: { component: "b" },
+            }}
           />
         </p>
       </>
@@ -443,28 +454,36 @@ export const NestedDynamicProps = {
         dynamic={{
           1: {
             component: "div",
-            style: {
-              color: "red",
+            props: {
+              style: {
+                color: "red",
+              },
             },
           },
           3: {
             component: Link,
-            style: {
-              color: "#4F97A3",
-              "text-decoration": "none",
+            props: {
+              style: {
+                color: "#4F97A3",
+                "text-decoration": "none",
+              },
             },
           },
           6: {
             component: "b",
-            style: {
-              "font-size": "xx-large",
+            props: {
+              style: {
+                "font-size": "xx-large",
+              },
             },
           },
           7: {
             component: Box,
-            style: {
-              display: "flex",
-              "flex-direction": "column-reverse",
+            props: {
+              style: {
+                display: "flex",
+                "flex-direction": "column-reverse",
+              },
             },
             children: {
               8: {
@@ -475,10 +494,12 @@ export const NestedDynamicProps = {
                 children: {
                   10: {
                     component: Box,
-                    style: {
-                      "background-color": "black",
-                      color: "white",
-                      width: "100px",
+                    props: {
+                      style: {
+                        "background-color": "black",
+                        color: "white",
+                        width: "100px",
+                      },
                     },
                   },
                 },
@@ -494,7 +515,7 @@ export const NestedDynamicProps = {
 export const WordAndNumberTag = {
   render: () => {
     const [comps, setComps] = createSignal<
-      TransDynamicBasicChildren | undefined
+      Record<string, TransDynamicBasicNode> | undefined
     >(undefined);
 
     const toggleComponentArray = () => {
