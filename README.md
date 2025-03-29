@@ -5,22 +5,24 @@ A library that combines [solid-js](https://www.solidjs.com/) nicely with
 
 ## Installation
 
+You should install `solid-js` and `i18next` along with `solidjs-i18next`.
+
 ### npm
 
 ```
-npm install solidjs-i18next
+npm install solid-js i18next solidjs-i18next
 ```
 
 ### yarn
 
 ```
-yarn add solidjs-i18next
+yarn add solid-js i18next solidjs-i18next
 ```
 
 ### pnpm
 
 ```
-pnpm add solidjs-i18next
+pnpm add solid-is i18next solidjs-i18next
 ```
 
 ## Usage
@@ -123,12 +125,16 @@ for example: `Hello <bold>world</bold>!`.
 ```
 <Trans i18nKey="..." dynamic={{
   comp1: {
-    component: Comp1
-    prop1: ...
+    component: Comp1,
+    props: {
+      prop1: ...
+    }
   },
   comp2: {
-    component: Comp2
-    prop2: ...,
+    component: Comp2,
+    props: {
+      prop2: ...,
+    },
     children: {
       comp3: {
         ...
@@ -151,8 +157,54 @@ Props:
 - `i18n` - custom `i18n` instance
 - `dynamic` - an array or object mapping which component and props to interpolate. It is similar to props passed in SolidJS's [`Dynamic`](https://docs.solidjs.com/concepts/control-flow/dynamic) component. It typically follows a tree-like structure, where each "node" has the following attributes:
   - `component` - a string representing an HTML element or SolidJS component that can (hopefully) receive text nodes as children
-  - `children` - recursively containing an array or object mapping of the same "nodes"
-  - any other props/arguments passed into the component
+  - `props` - an object containing the props to pass into the component
+  - `children` - recursively containing an object mapping of the same "nodes"
+
+Because `dynamic` is a tree-like object, `Trans` typechecking is much more tricky. Therefore, we provided some experimental convieniences for `dynamic` oject typechecking.
+
+- `transDynamicNode` is simply an identity function wrapper that wraps around a dynamic object node to provide better typechecking for the `component` and `props` attributes.
+  ```
+  transDynamicNode({
+    component: "h1",
+    props: {} // This object is now typechecked for h1 element props
+  })
+  ```
+- `TransTypecheck` is a wrapper component of `Trans` that allows a generic dynamic tree-like structure to help typecheck
+  the entire `dynamic` prop
+  ```
+  <TransTypecheck<{
+    comp1: {
+      component: Comp1
+    },
+    comp2: {
+      component: Comp2,
+      cildren: {
+        comp3: ...
+      }
+    }
+  }>
+    i18nKey="..."
+    dynamic={{ // This entire object is typechecked
+      comp1: {
+        component: Comp1,
+        props: {
+          prop1: ...
+        }
+      },
+      comp2: {
+        component: Comp2,
+        props: {
+          prop2: ...,
+        },
+        children: {
+          comp3: {
+            ...
+          }
+        }
+      }
+    }
+  }>
+  ```
 
 ## Contributing
 
