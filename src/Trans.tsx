@@ -1,4 +1,4 @@
-import { type IDom, parse } from "html-parse-string";
+import HTML, { type IDoc } from "html-parse-stringify";
 import type { i18n, TFunction, TOptions, TOptionsBase } from "i18next";
 import i18next from "i18next";
 import {
@@ -129,7 +129,7 @@ export const Trans: Component<TransProps> = (props) => {
     return translateStr && keepRegex.test(translateStr);
   };
 
-  const ast = () => parse(`<0>${translation()}</0>`);
+  const ast = () => HTML.parse(`<0>${translation()}</0>`);
 
   const interpolate = (content: string | undefined | null) => {
     const i18nInstance = untrack(i18n);
@@ -144,7 +144,7 @@ export const Trans: Component<TransProps> = (props) => {
   };
 
   const buildContent = (
-    astNodes: IDom[],
+    astNodes: IDoc[],
     dynamic?: Record<string, TransDynamicBasicNode> | undefined,
   ): JSXElement[] => {
     return astNodes.reduce((mem, node) => {
@@ -155,14 +155,9 @@ export const Trans: Component<TransProps> = (props) => {
         const child =
           dynamic?.[parseInt(node.name, 10)] ?? dynamic?.[node.name];
 
-        const nodeAttrs: Record<string, string> = {};
-        for (const attr of node.attrs) {
-          nodeAttrs[attr.name] = attr.value;
-        }
-
         if (child) {
           if (child.component) {
-            const finalProps = mergeProps(nodeAttrs, child.props);
+            const finalProps = mergeProps(node.attrs, child.props);
             mem.push(
               <Dynamic
                 component={child.component}
@@ -182,7 +177,7 @@ export const Trans: Component<TransProps> = (props) => {
             mem.push(
               <Dynamic
                 component={node.name}
-                {...nodeAttrs}
+                {...node.attrs}
                 children={
                   node.voidElement ? undefined : buildContent(node.children)
                 }

@@ -13,11 +13,6 @@ export default defineConfig({
       reporter: ["html"],
     },
     setupFiles: ["./tests/vitest.setup.ts"],
-    server: {
-      deps: {
-        inline: ["html-parse-string"],
-      },
-    },
     clearMocks: true,
     mockReset: true,
     restoreMocks: true,
