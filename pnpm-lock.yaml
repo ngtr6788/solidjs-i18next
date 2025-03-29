@@ -4,6 +4,11 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+patchedDependencies:
+  html-parse-stringify:
+    hash: e05ff5122462756cc9c45bca687cd0646d8c4ec753bd519802ac0e02689244df
+    path: patches/html-parse-stringify.patch
+
 importers:
 
   .:
@@ -11,9 +16,9 @@ importers:
       '@solid-primitives/map':
         specifier: ^0.4.13
         version: 0.4.13(solid-js@1.9.4)
-      html-parse-string:
-        specifier: ^0.0.9
-        version: 0.0.9
+      html-parse-stringify:
+        specifier: ^3.0.1
+        version: 3.0.1(patch_hash=e05ff5122462756cc9c45bca687cd0646d8c4ec753bd519802ac0e02689244df)
     devDependencies:
       '@commitlint/cli':
         specifier: ^19.7.1
@@ -1980,8 +1985,8 @@ packages:
   html-escaper@2.0.2:
     resolution: {integrity: sha512-H2iMtd0I4Mt5eYiapRdIDjp+XzelXQ0tFE4JS7YFwFevXXMmOp9myNrUvCg0D6ws8iqkRPBfKHgbwig1SmlLfg==}
 
-  html-parse-string@0.0.9:
-    resolution: {integrity: sha512-wyGnsOolHbNrcb8N6bdJF4EHyzd3zVGCb9/mBxeNjAYBDOZqD7YkqLBz7kXtdgHwNnV8lN/BpSDpsI1zm8Sd8g==}
+  html-parse-stringify@3.0.1:
+    resolution: {integrity: sha512-KknJ50kTInJ7qIScF3jeaFRpMpE8/lfiTdzf/twXyPBLAGrLRTmkz3AdTnKeh40X8k9L2fdYwEp/42WGXIRGcg==}
 
   html-tags@3.3.1:
     resolution: {integrity: sha512-ztqyC3kLto0e9WbNp0aeP+M3kTt+nbaIveGmUxAtZa+8iFgKLUOD4YKM5j+f3QD89bra7UeumolZHKuOXnTmeQ==}
@@ -3360,6 +3365,10 @@ packages:
         optional: true
       jsdom:
         optional: true
+
+  void-elements@3.1.0:
+    resolution: {integrity: sha512-Dhxzh5HZuiHQhbvTW9AMetFfBHDMYpo23Uo9btPXgdYP+3T5S+p+jgNy7spra+veYhBP2dCSgxR/i2Y02h5/6w==}
+    engines: {node: '>=0.10.0'}
 
   w3c-xmlserializer@5.0.0:
     resolution: {integrity: sha512-o8qghlI8NZHU1lLPrpi2+Uq7abh4GGPpYANlalzWxyWteJOCsr/P+oPBA49TOLu5FTZO4d3F9MnWJfiMo4BkmA==}
@@ -5446,7 +5455,9 @@ snapshots:
 
   html-escaper@2.0.2: {}
 
-  html-parse-string@0.0.9: {}
+  html-parse-stringify@3.0.1(patch_hash=e05ff5122462756cc9c45bca687cd0646d8c4ec753bd519802ac0e02689244df):
+    dependencies:
+      void-elements: 3.1.0
 
   html-tags@3.3.1: {}
 
@@ -6679,6 +6690,8 @@ snapshots:
       - sugarss
       - supports-color
       - terser
+
+  void-elements@3.1.0: {}
 
   w3c-xmlserializer@5.0.0:
     dependencies:
