@@ -54,6 +54,8 @@ const i18nInit = {
           "<0>Number tag <word0><strong>word</strong> 0</word0>, <word1><strong>word</strong> 1</word1>, <1234><strong>longer</strong> word</1234></0>",
         "this-tag-has-void-elements":
           "This <tag /> <has></has> <void /> elements",
+        "this-string-has-lots-of-space":
+          "<this>     This   </this>         <string>          </string>      has      <lots />   <of>of</of>        space",
       },
       silly: {
         "click-here-to-subscribe": "<0>SMASH LIKE</0> and <1>SUBSCRIBE</1>",
@@ -740,6 +742,32 @@ export const VoidElementTags = {
           <button on:click={toggleNoDynamic}>Toggle no dynamic</button>
           <button on:click={toggleEmptyDynamic}>Toggle empty dynamic</button>
           <button on:click={toggleFilledDynamic}>Toggle filled dynamic</button>
+        </div>
+      </>
+    );
+  },
+};
+
+export const TranslationStringSpaces = {
+  render: () => {
+    const [dynamic, setDynamic] = createSignal<
+      Record<string, TransDynamicBasicNode> | undefined
+    >(undefined);
+
+    const toggleNoDynamic = () => {
+      setDynamic(undefined);
+    };
+
+    const toggleEmptyDynamic = () => {
+      setDynamic({});
+    };
+
+    return (
+      <>
+        <Trans i18nKey="this-string-has-lots-of-space" dynamic={dynamic()} />
+        <div>
+          <button on:click={toggleNoDynamic}>Toggle no dynamic</button>
+          <button on:click={toggleEmptyDynamic}>Toggle empty dynamic</button>
         </div>
       </>
     );
