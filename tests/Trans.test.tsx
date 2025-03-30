@@ -52,6 +52,8 @@ const i18nInit = {
           "<word>Word tag <strong>STRONG</strong>, <i>italics</i>, <p>paragraph</p></word>",
         "nested-number-buildable-tags":
           "<0>Number tag <strong>STRONG</strong>, <i>italics</i>, <p>paragraph</p></0>",
+        "this-tag-has-void-elements":
+          "This <tag /> <has></has> <void /> elements",
       },
       silly: {
         "click-here-to-subscribe": "<0>SMASH LIKE</0> and <1>SUBSCRIBE</1>",
@@ -446,6 +448,73 @@ describe("Trans component tests", () => {
       const screen = render(() => <Test />, {});
       expect(screen.container.innerHTML).toEqual(
         `Number ${escape("<1>one</1>")}, number three, number ${escape("<6>six</6>")}, number seven, ${escape("<8>eight</8>")}, ${escape("<9>")}nine, ten${escape("</9>")}`,
+      );
+    });
+
+    test("void elements with and without dynamic", async () => {
+      const user = userEvent.setup();
+      const Test = () => {
+        const [dynamic, setDynamic] = createSignal<
+          Record<string, TransDynamicBasicNode> | undefined
+        >(undefined);
+
+        const toggleNoDynamic = () => {
+          setDynamic(undefined);
+        };
+
+        const toggleEmptyDynamic = () => {
+          setDynamic({});
+        };
+
+        const toggleFilledDynamic = () => {
+          setDynamic({
+            tag: {
+              component: () => {
+                return <i>italic tag</i>;
+              },
+            },
+            has: {
+              component: () => {
+                return <strong>DEFINITELY HAS</strong>;
+              },
+            },
+            void: {
+              component: () => {
+                return <button>1 button</button>;
+              },
+            },
+          });
+        };
+
+        return (
+          <>
+            <div data-testid="translated-string">
+              <Trans i18nKey="this-tag-has-void-elements" dynamic={dynamic()} />
+            </div>
+            <div>
+              <button on:click={toggleNoDynamic}>Toggle no dynamic</button>
+              <button on:click={toggleEmptyDynamic}>
+                Toggle empty dynamic
+              </button>
+              <button on:click={toggleFilledDynamic}>
+                Toggle filled dynamic
+              </button>
+            </div>
+          </>
+        );
+      };
+
+      const screen = render(() => <Test />, {});
+      expect(screen.getByTestId("translated-string").innerHTML).toEqual(
+        `This ${escape("<tag />")} ${escape("<has></has>")} ${escape("<void />")} elements`,
+      );
+      await user.click(screen.getByText("Toggle empty dynamic"));
+      expect(screen.getByTestId("translated-string").innerHTML).toEqual(
+        `This ${escape("<tag />")} ${escape("<has></has>")} ${escape("<void />")} elements`,
+      );
+      await user.click(screen.getByText("Toggle filled dynamic"));
+      expect(screen.getByTestId("translated-string").innerHTML).toEqual(
+        `This <i>italic tag</i> <strong>DEFINITELY HAS</strong> <button>1 button</button> elements`,
       );
     });
   });

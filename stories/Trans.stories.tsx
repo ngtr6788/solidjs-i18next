@@ -52,6 +52,8 @@ const i18nInit = {
           "<word>Word tag <0><strong>number</strong> 0</0>, <1><strong>number</strong> 1</1>, <longer-word><strong>longer</strong> word</longer-word></word>",
         "nested-number-word-tags-with-buildables":
           "<0>Number tag <word0><strong>word</strong> 0</word0>, <word1><strong>word</strong> 1</word1>, <1234><strong>longer</strong> word</1234></0>",
+        "this-tag-has-void-elements":
+          "This <tag /> <has></has> <void /> elements",
       },
       silly: {
         "click-here-to-subscribe": "<0>SMASH LIKE</0> and <1>SUBSCRIBE</1>",
@@ -693,6 +695,53 @@ export const FragmentInNestedDynamicProps = {
           },
         }}
       />
+    );
+  },
+};
+
+export const VoidElementTags = {
+  render: () => {
+    const [dynamic, setDynamic] = createSignal<
+      Record<string, TransDynamicBasicNode> | undefined
+    >(undefined);
+
+    const toggleNoDynamic = () => {
+      setDynamic(undefined);
+    };
+
+    const toggleEmptyDynamic = () => {
+      setDynamic({});
+    };
+
+    const toggleFilledDynamic = () => {
+      setDynamic({
+        tag: {
+          component: () => {
+            return <i>italic tag</i>;
+          },
+        },
+        has: {
+          component: () => {
+            return <strong>DEFINITELY HAS</strong>;
+          },
+        },
+        void: {
+          component: () => {
+            return <button>1 button</button>;
+          },
+        },
+      });
+    };
+
+    return (
+      <>
+        <Trans i18nKey="this-tag-has-void-elements" dynamic={dynamic()} />
+        <div>
+          <button on:click={toggleNoDynamic}>Toggle no dynamic</button>
+          <button on:click={toggleEmptyDynamic}>Toggle empty dynamic</button>
+          <button on:click={toggleFilledDynamic}>Toggle filled dynamic</button>
+        </div>
+      </>
     );
   },
 };

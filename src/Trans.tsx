@@ -184,7 +184,7 @@ export const Trans: Component<TransProps> = (props) => {
               />,
             );
           } else if (node.voidElement) {
-            mem.push(`<${node.name}></${node.name}>`);
+            mem.push(`<${node.name} />`);
           } else {
             mem.push(
               `<${node.name}>`,
