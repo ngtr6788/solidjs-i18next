@@ -1,6 +1,6 @@
 import { type Meta, type StoryObj } from "@storybook/html";
 import i18next from "i18next";
-import { createEffect, createSignal } from "solid-js";
+import { createEffect, createSignal, untrack } from "solid-js";
 
 import { I18NextProvider, useTranslation } from "../src";
 
@@ -157,7 +157,8 @@ export const UseTranslationNamespaceArrayProp = {
     ];
 
     const [tick, setTick] = createSignal(0);
-    const [hasUpdated, setHasUpdated] = createSignal(false);
+    const [hasUpdatedButtonString, setHasUpdatedButtonString] =
+      createSignal(false);
 
     const [t] = useTranslation({
       get ns() {
@@ -169,22 +170,22 @@ export const UseTranslationNamespaceArrayProp = {
       setTick((n) => (n + 1) % namespaces.length);
     };
 
-    createEffect(() => {
-      tick();
-      setHasUpdated(false);
-    });
-
-    createEffect(() => {
-      t("button");
-      setHasUpdated(true);
-    });
+    createEffect((prevButtonString) => {
+      tick(); // we want this effect to run when tick is updated
+      const curButtonString = untrack(() => t("button"));
+      setHasUpdatedButtonString(prevButtonString !== curButtonString);
+      return curButtonString;
+    }, "");
 
     return (
       <>
         <button on:click={handleClick}>Change namespace</button>
         <p>{t("button")}</p>
         <p>Tick: {tick()}</p>
-        <p>Has updated: {hasUpdated() ? "true" : "false"}</p>
+        <p>
+          Button string has updated:{" "}
+          {hasUpdatedButtonString() ? "true" : "false"}
+        </p>
       </>
     ) as Element;
   },
