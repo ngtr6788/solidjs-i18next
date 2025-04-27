@@ -1,6 +1,6 @@
 diff --git a/dist/html-parse-stringify.d.ts b/dist/html-parse-stringify.d.ts
 new file mode 100644
-index 0000000000000000000000000000000000000000..9d02e76b75cacf655a98e5a1b62b818e477eb318
+index 0000000000000000000000000000000000000000..63fb1d0cba7b89e7cbe4a2f8037cefb6505fb4bd
 --- /dev/null
 +++ b/dist/html-parse-stringify.d.ts
 @@ -0,0 +1,51 @@
@@ -39,8 +39,8 @@ index 0000000000000000000000000000000000000000..9d02e76b75cacf655a98e5a1b62b818e
 +    children: Node[];
 +  }
 +
-+  interface InterfaceNode {
-+    type: "interface";
++  interface ComponentNode {
++    type: "component";
 +    name: string;
 +    attrs: Record<string, unknown>;
 +    voidElement: boolean;
