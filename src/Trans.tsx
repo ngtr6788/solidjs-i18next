@@ -1,4 +1,4 @@
-import HTML, { type IDoc } from "html-parse-stringify";
+import HTML from "html-parse-stringify";
 import type { i18n, TFunction, TOptions, TOptionsBase } from "i18next";
 import i18next from "i18next";
 import {
@@ -129,7 +129,7 @@ export const Trans: Component<TransProps> = (props) => {
     return translateStr && keepRegex.test(translateStr);
   };
 
-  const ast = () => HTML.parse(`<0>${translation()}</0>`);
+  const ast = () => HTML.parse(`<0>${translation()}</0>`) as HTML.TagNode[];
 
   const interpolate = (content: string | undefined | null) => {
     const i18nInstance = untrack(i18n);
@@ -144,7 +144,7 @@ export const Trans: Component<TransProps> = (props) => {
   };
 
   const buildContent = (
-    astNodes: IDoc[],
+    astNodes: HTML.Node[],
     dynamic?: Record<string, TransDynamicBasicNode> | undefined,
   ): JSXElement[] => {
     return astNodes.reduce((mem, node) => {
