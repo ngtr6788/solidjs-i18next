@@ -6,7 +6,7 @@ settings:
 
 patchedDependencies:
   html-parse-stringify:
-    hash: eb29d19b080d8d93ab9e77646dca567e4df47f4b067e5f09e147ca78aa00bf5e
+    hash: 237a6b56b33be88b3ef36d4bc9ced682318e363d4afd84ee6f58c3520d685636
     path: patches/html-parse-stringify.patch
 
 importers:
@@ -18,7 +18,7 @@ importers:
         version: 0.4.13(solid-js@1.9.4)
       html-parse-stringify:
         specifier: ^3.0.1
-        version: 3.0.1(patch_hash=eb29d19b080d8d93ab9e77646dca567e4df47f4b067e5f09e147ca78aa00bf5e)
+        version: 3.0.1(patch_hash=237a6b56b33be88b3ef36d4bc9ced682318e363d4afd84ee6f58c3520d685636)
     devDependencies:
       '@commitlint/cli':
         specifier: ^19.7.1
@@ -5455,7 +5455,7 @@ snapshots:
 
   html-escaper@2.0.2: {}
 
-  html-parse-stringify@3.0.1(patch_hash=eb29d19b080d8d93ab9e77646dca567e4df47f4b067e5f09e147ca78aa00bf5e):
+  html-parse-stringify@3.0.1(patch_hash=237a6b56b33be88b3ef36d4bc9ced682318e363d4afd84ee6f58c3520d685636):
     dependencies:
       void-elements: 3.1.0
 

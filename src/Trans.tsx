@@ -144,7 +144,7 @@ export const Trans: Component<TransProps> = (props) => {
   };
 
   const buildContent = (
-    astNodes: HTML.Node[],
+    astNodes: HTML.ASTNode[],
     dynamic?: Record<string, TransDynamicBasicNode> | undefined,
   ): JSXElement[] => {
     return astNodes.reduce((mem, node) => {

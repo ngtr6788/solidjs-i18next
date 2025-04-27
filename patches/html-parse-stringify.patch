@@ -1,6 +1,6 @@
 diff --git a/dist/html-parse-stringify.d.ts b/dist/html-parse-stringify.d.ts
 new file mode 100644
-index 0000000000000000000000000000000000000000..63fb1d0cba7b89e7cbe4a2f8037cefb6505fb4bd
+index 0000000000000000000000000000000000000000..8dfb889464ec6eeca8070a40981c0325154c9137
 --- /dev/null
 +++ b/dist/html-parse-stringify.d.ts
 @@ -0,0 +1,51 @@
@@ -11,12 +11,12 @@ index 0000000000000000000000000000000000000000..63fb1d0cba7b89e7cbe4a2f8037cefb6
 +declare module htmlParseStringify {
 +  export interface htmlParseStringify {
 +    new (): htmlParseStringify;
-+    parse_tag(tag: string): Node;
-+    parse(html: string, options?: IOptions): Node[];
-+    stringify(doc: Node): string;
++    parse_tag(tag: string): ASTNode;
++    parse(html: string, options?: IOptions): ASTNode[];
++    stringify(doc: ASTNode): string;
 +  }
 +
-+  export type Node = TextNode | TagNode | VoidTagNode | InterfaceNode;
++  export type ASTNode = TextNode | TagNode | VoidTagNode | ComponentNode;
 +
 +  interface TextNode {
 +    type: "text";
@@ -36,7 +36,7 @@ index 0000000000000000000000000000000000000000..63fb1d0cba7b89e7cbe4a2f8037cefb6
 +    name: string;
 +    attrs: Record<string, unknown>;
 +    voidElement: false;
-+    children: Node[];
++    children: ASTNode[];
 +  }
 +
 +  interface ComponentNode {
