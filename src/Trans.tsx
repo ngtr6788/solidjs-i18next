@@ -172,7 +172,7 @@ export const Trans: Component<TransProps> = (props) => {
               `</${node.name}>`,
             );
           }
-        } else if (Number.isNaN(parseFloat(node.name))) {
+        } else {
           if (keepArray.includes(node.name)) {
             mem.push(
               <Dynamic
@@ -192,12 +192,6 @@ export const Trans: Component<TransProps> = (props) => {
               `</${node.name}>`,
             );
           }
-        } else {
-          mem.push(
-            `<${node.name}>`,
-            buildContent(node.children),
-            `</${node.name}>`,
-          );
         }
       }
       return mem;
