@@ -14,6 +14,7 @@ import {
 import { Dynamic } from "solid-js/web";
 
 import { I18nContext } from "./I18NextProvider.tsx";
+import { type I18nextExtendedOptions } from "./initPlugin.ts";
 
 export interface TransDynamicBasicNode {
   component?: ValidComponent;
@@ -78,10 +79,10 @@ export const Trans: Component<TransProps> = (props) => {
 
   const i18n = () => props.i18n || i18nContext?.i18n || i18next;
 
-  const t = () => props.t || i18n().t.bind(i18n());
+  const t = () => props.t || i18n()!.t.bind(i18n());
 
   const namespaces = () => {
-    const namespaces = props.ns || i18n().options?.defaultNS;
+    const namespaces = props.ns || i18n()!.options?.defaultNS;
     const namespacesArray =
       typeof namespaces === "string"
         ? [namespaces]
@@ -89,10 +90,22 @@ export const Trans: Component<TransProps> = (props) => {
     return namespacesArray;
   };
 
-  const keepArray = ["br", "strong", "i", "p"];
-  const keepRegex = new RegExp(keepArray.map((keep) => `<${keep}`).join("|"));
+  const i18nOptions = () => i18n().options as I18nextExtendedOptions;
 
-  const defaultValue = () => props.defaultValue || props.i18nKey;
+  const keepArray = () =>
+    i18nOptions().solidjs.transKeepBasicHtmlNodesFor || [];
+
+  const keepRegex = () =>
+    new RegExp(
+      keepArray()
+        .map((keep) => `<${keep}`)
+        .join("|"),
+    );
+
+  const defaultValue = () =>
+    props.defaultValue ||
+    i18nOptions().solidjs.transEmptyNodeValue ||
+    props.i18nKey;
 
   const key = () => props.i18nKey || defaultValue();
 
@@ -126,7 +139,7 @@ export const Trans: Component<TransProps> = (props) => {
 
   const emptyChildrenButNeedsHandling = () => {
     const translateStr = translation();
-    return translateStr && keepRegex.test(translateStr);
+    return translateStr && keepRegex().test(translateStr);
   };
 
   const ast = () => HTML.parse(`<0>${translation()}</0>`) as HTML.TagNode[];
@@ -173,7 +186,7 @@ export const Trans: Component<TransProps> = (props) => {
             );
           }
         } else {
-          if (keepArray.includes(node.name)) {
+          if (keepArray().includes(node.name)) {
             mem.push(
               <Dynamic
                 component={node.name}

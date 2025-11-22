@@ -10,8 +10,8 @@ import {
   useContext,
 } from "solid-js";
 
-import { I18N_LISTENERS, I18N_STORE_LISTENERS } from "./constants.ts";
 import { I18nContext } from "./I18NextProvider.tsx";
+import { type I18nextExtendedOptions } from "./initPlugin.ts";
 
 function hasLoadedNamespace(
   i18n: i18n,
@@ -69,20 +69,22 @@ export function useTranslation(
   });
 
   createEffect(() => {
-    I18N_LISTENERS.forEach((event) => {
+    const i18nOptions = i18n.options as I18nextExtendedOptions;
+
+    i18nOptions.solidjs.bindI18n.forEach((event) => {
       i18n.on(event, dirtyT);
     });
 
-    I18N_STORE_LISTENERS.forEach((event) => {
+    i18nOptions.solidjs.bindI18nStore.forEach((event) => {
       i18n.store.on(event, dirtyT);
     });
 
     onCleanup(() => {
-      I18N_LISTENERS.forEach((event) => {
+      i18nOptions.solidjs.bindI18n.forEach((event) => {
         i18n.off(event, dirtyT);
       });
 
-      I18N_STORE_LISTENERS.forEach((event) => {
+      i18nOptions.solidjs.bindI18nStore.forEach((event) => {
         i18n.store.off(event, dirtyT);
       });
     });

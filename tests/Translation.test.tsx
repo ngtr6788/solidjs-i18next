@@ -7,6 +7,7 @@ import { describe, expect, onTestFinished, test } from "vitest";
 const user = userEvent.setup();
 
 import { Translation } from "../src";
+import { initSolidI18next } from "../src/initPlugin";
 
 const i18nextInit = {
   resources: {
@@ -36,7 +37,7 @@ const i18nextInit = {
   fallbackLng: "en",
 };
 
-i18next.init(i18nextInit);
+i18next.use(initSolidI18next).init(i18nextInit);
 
 describe("Translation component tests", () => {
   test("i18n.language change", async () => {

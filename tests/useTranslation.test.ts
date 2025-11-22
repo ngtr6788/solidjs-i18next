@@ -12,6 +12,7 @@ import {
 } from "vitest";
 
 import { useTranslation } from "../src";
+import { initSolidI18next } from "../src/initPlugin";
 
 const i18nextInit = {
   resources: {
@@ -41,7 +42,7 @@ const i18nextInit = {
   fallbackLng: "en",
 };
 
-i18next.init(i18nextInit);
+i18next.use(initSolidI18next).init(i18nextInit);
 
 describe("useTranslation tests", () => {
   test("i18n.language change", () => {

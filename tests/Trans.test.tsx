@@ -11,6 +11,7 @@ import {
   type TransDynamicBasicNode,
   transDynamicNode,
 } from "../src";
+import { initSolidI18next } from "../src/initPlugin";
 
 const i18nInit = {
   resources: {
@@ -69,7 +70,7 @@ const i18nInit = {
   fallbackLng: "en",
 };
 
-i18next.init(i18nInit);
+i18next.use(initSolidI18next).init(i18nInit);
 
 describe("Trans component tests", () => {
   describe("dynamic prop tests", () => {
